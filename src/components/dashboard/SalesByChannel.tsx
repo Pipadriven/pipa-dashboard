@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../../hooks/use-theme";
 
 const data = [
   { canal: "Mídia Paga", vendas: 14, receita: 2100000 },

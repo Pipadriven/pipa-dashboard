@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ReferenceLine } from "recharts";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../../hooks/use-theme";
 
 const data = [
   { mes: "Jun", orcado: 2800000, realizado: 2750000 },

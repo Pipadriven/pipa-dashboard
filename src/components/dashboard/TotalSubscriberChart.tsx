@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from "recharts";
 import { ChevronDown } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../../hooks/use-theme";
 
 const data = [
   { day: "Dom", value: 2200 },

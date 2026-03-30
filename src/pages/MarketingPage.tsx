@@ -1,5 +1,5 @@
-import { DashboardLayout } from "@/components/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
+import { DashboardLayout } from "../components/DashboardLayout";
+import { StatCard } from "../components/dashboard/StatCard";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -26,7 +26,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../hooks/use-theme";
 
 // Funil de conversão
 const funnelData = [
