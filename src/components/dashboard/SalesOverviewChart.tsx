@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Filter, ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../../hooks/use-theme";
 
 const data = [
   { month: "Out", Direto: 900, Indicação: 700, Orgânico: 500, Social: 500, Outros: 388 },

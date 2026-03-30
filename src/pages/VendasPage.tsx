@@ -1,5 +1,5 @@
-import { DashboardLayout } from "@/components/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
+import { DashboardLayout } from "../components/DashboardLayout";
+import { StatCard } from "../components/dashboard/StatCard";
 import { motion } from "framer-motion";
 import {
   DollarSign,
@@ -24,7 +24,7 @@ import {
   Area,
   Cell,
 } from "recharts";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "../hooks/use-theme";
 
 // Pipeline de vendas
 const pipelineData = [

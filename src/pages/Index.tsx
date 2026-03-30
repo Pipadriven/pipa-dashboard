@@ -1,12 +1,12 @@
-import { DashboardLayout } from "@/components/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
-import { SalesOverviewChart } from "@/components/dashboard/SalesOverviewChart";
-import { TotalSubscriberChart } from "@/components/dashboard/TotalSubscriberChart";
+import { DashboardLayout } from "../components/DashboardLayout";
+import { StatCard } from "../components/dashboard/StatCard";
+import { SalesOverviewChart } from "../components/dashboard/SalesOverviewChart";
+import { TotalSubscriberChart } from "../components/dashboard/TotalSubscriberChart";
 // removed SalesDistribution
-import { FunnelOverview } from "@/components/dashboard/FunnelOverview";
-import { SalesByChannel } from "@/components/dashboard/SalesByChannel";
-import { VGVProgress } from "@/components/dashboard/VGVProgress";
-import { BudgetComparison } from "@/components/dashboard/BudgetComparison";
+import { FunnelOverview } from "../components/dashboard/FunnelOverview";
+import { SalesByChannel } from "../components/dashboard/SalesByChannel";
+import { VGVProgress } from "../components/dashboard/VGVProgress";
+import { BudgetComparison } from "../components/dashboard/BudgetComparison";
 import { Users, ShoppingCart, DollarSign, Target, Calendar, Filter, Download, ChevronDown, TrendingUp, Banknote, Eye, Building2, PiggyBank, BarChart3 } from "lucide-react";
 
 const Index = () => {

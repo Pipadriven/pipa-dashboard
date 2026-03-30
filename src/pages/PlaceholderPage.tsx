@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/DashboardLayout";
+import { DashboardLayout } from "../components/DashboardLayout";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
