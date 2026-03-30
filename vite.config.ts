@@ -14,9 +14,9 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
-    alias: [
-      { find: "@", replacement: path.resolve(__dirname, "src") },
-    ],
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
 }));
