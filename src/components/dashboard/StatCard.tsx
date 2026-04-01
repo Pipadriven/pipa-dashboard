@@ -20,21 +20,15 @@ export function StatCard({ title, value, change, icon: Icon, prefix = "", delay 
       transition={{ duration: 0.4, delay }}
       className="stat-card"
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Icon className="h-4 w-4" />
-          <span className="text-sm font-medium">{title}</span>
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground min-w-0">
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+          <span className="text-[11px] sm:text-sm font-medium truncate">{title}</span>
         </div>
-        <button className="text-muted-foreground hover:text-foreground transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-            <path d="M12 16v-4m0-4h.01" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
       </div>
-      <div className="flex items-end gap-3">
-        <span className="text-2xl font-bold text-foreground">{prefix}{value}</span>
-        <span className={isPositive ? "badge-success" : "badge-destructive"}>
+      <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-3">
+        <span className="text-lg sm:text-2xl font-bold text-foreground truncate">{prefix}{value}</span>
+        <span className={`text-[10px] sm:text-xs ${isPositive ? "badge-success" : "badge-destructive"} whitespace-nowrap`}>
           {isPositive ? "↗" : "↘"} {Math.abs(change)}%
         </span>
       </div>
