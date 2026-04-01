@@ -9,10 +9,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
 
   if (user) {
@@ -25,17 +24,12 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    const { error } = isSignUp
-      ? await signUp(email, password)
-      : await signIn(email, password);
+    const { error } = await signIn(email, password);
 
     if (error) {
       setError(error.message);
-    } else if (!isSignUp) {
-      navigate('/', { replace: true });
     } else {
-      setError('');
-      alert('Verifique seu e-mail para confirmar o cadastro.');
+      navigate('/', { replace: true });
     }
 
     setLoading(false);
@@ -53,14 +47,8 @@ export default function LoginPage() {
               pipadriven
             </span>
           </div>
-          <CardTitle className="text-2xl">
-            {isSignUp ? 'Criar conta' : 'Entrar'}
-          </CardTitle>
-          <CardDescription>
-            {isSignUp
-              ? 'Preencha os dados para criar sua conta'
-              : 'Acesse sua conta para continuar'}
-          </CardDescription>
+          <CardTitle className="text-2xl">Entrar</CardTitle>
+          <CardDescription>Acesse sua conta para continuar</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -93,17 +81,10 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
+          <CardFooter>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Carregando...' : isSignUp ? 'Criar conta' : 'Entrar'}
+              {loading ? 'Carregando...' : 'Entrar'}
             </Button>
-            <button
-              type="button"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-            >
-              {isSignUp ? 'Já tem conta? Entrar' : 'Não tem conta? Criar agora'}
-            </button>
           </CardFooter>
         </form>
       </Card>
