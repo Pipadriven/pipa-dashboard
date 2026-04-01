@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../contexts/AuthContext";
 import {
   LayoutDashboard,
   Megaphone,
@@ -8,6 +9,7 @@ import {
   Bot,
   Settings,
   HelpCircle,
+  LogOut,
   ChevronLeft,
   ChevronRight,
   Triangle,
