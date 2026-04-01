@@ -123,7 +123,27 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               Suporte
             </p>
           )}
-          <div className="space-y-0.5">{supportItems.map(renderItem)}</div>
+          <div className="space-y-0.5">
+            {supportItems.map(renderItem)}
+            <button
+              onClick={handleLogout}
+              className="sidebar-item w-full text-left"
+            >
+              <LogOut className="h-5 w-5 shrink-0" />
+              <AnimatePresence>
+                {!isCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="truncate"
+                  >
+                    Sair
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
       </nav>
     </motion.aside>
