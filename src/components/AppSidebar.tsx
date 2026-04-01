@@ -10,9 +10,9 @@ import {
   HelpCircle,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Triangle,
 } from "lucide-react";
+import { useIsMobile } from "../hooks/use-mobile";
 
 const mainItems = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
@@ -26,9 +26,17 @@ const supportItems = [
   { title: "Ajuda", url: "/help", icon: HelpCircle },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  onNavigate?: () => void;
+}
+
+export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
+
+  // Never collapse on mobile drawer
+  const isCollapsed = isMobile ? false : collapsed;
 
   const isActive = (url: string) => location.pathname === url;
 
@@ -36,11 +44,12 @@ export function AppSidebar() {
     <Link
       key={item.title}
       to={item.url}
+      onClick={onNavigate}
       className={`sidebar-item ${isActive(item.url) ? "sidebar-item-active" : ""}`}
     >
       <item.icon className="h-5 w-5 shrink-0" />
       <AnimatePresence>
-        {!collapsed && (
+        {!isCollapsed && (
           <motion.span
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: "auto" }}
@@ -56,13 +65,13 @@ export function AppSidebar() {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 72 : 240 }}
+      animate={{ width: isMobile ? 260 : isCollapsed ? 72 : 240 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="h-screen sticky top-0 flex flex-col shrink-0 overflow-hidden bg-sidebar"
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-4 h-16">
-        {!collapsed && (
+        {!isCollapsed && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -77,17 +86,19 @@ export function AppSidebar() {
             </div>
           </motion.div>
         )}
-        {collapsed && (
+        {isCollapsed && (
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center mx-auto">
             <Triangle className="h-4 w-4 text-primary-foreground" />
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-        >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
+        {!isMobile && (
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -97,7 +108,7 @@ export function AppSidebar() {
         </div>
 
         <div>
-          {!collapsed && (
+          {!isCollapsed && (
             <p className="text-[11px] font-semibold uppercase tracking-wider px-3 mb-2 text-muted-foreground/50">
               Suporte
             </p>
@@ -105,7 +116,6 @@ export function AppSidebar() {
           <div className="space-y-0.5">{supportItems.map(renderItem)}</div>
         </div>
       </nav>
-
     </motion.aside>
   );
 }
