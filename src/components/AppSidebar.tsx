@@ -35,10 +35,18 @@ interface AppSidebarProps {
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { signOut } = useAuth();
 
   // Never collapse on mobile drawer
   const isCollapsed = isMobile ? false : collapsed;
+
+  const handleLogout = async () => {
+    await signOut();
+    onNavigate?.();
+    navigate('/login', { replace: true });
+  };
 
   const isActive = (url: string) => location.pathname === url;
 
