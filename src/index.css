@@ -155,7 +155,7 @@
 
 @layer utilities {
   .stat-card {
-    @apply bg-card rounded-xl p-5 border border-border hover:border-primary/30 transition-all duration-300;
+    @apply bg-card rounded-xl p-3 sm:p-5 border border-border hover:border-primary/30 transition-all duration-300;
     border-left: 3px solid hsl(var(--primary));
   }
 
