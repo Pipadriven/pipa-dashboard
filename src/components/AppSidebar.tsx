@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logoImg from "../assets/logo-pipa.png";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
@@ -87,19 +88,14 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             animate={{ opacity: 1 }}
             className="flex items-center gap-2"
           >
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <Triangle className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold text-primary">PIPA</span>
-              <span className="text-sm font-medium italic text-primary/80">Driven</span>
-            </div>
+            <img src={logoImg} alt="PIPA" className="h-8 w-auto" />
+            <span style={{ fontFamily: 'Montserrat, sans-serif' }} className="text-lg text-sidebar-foreground">
+              <span className="font-bold">PIPA</span><span className="italic font-medium">Driven</span>
+            </span>
           </motion.div>
         )}
         {isCollapsed && (
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center mx-auto">
-            <Triangle className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img src={logoImg} alt="PIPA" className="h-8 w-auto mx-auto" />
         )}
         {!isMobile && (
           <button
