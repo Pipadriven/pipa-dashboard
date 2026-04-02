@@ -41,7 +41,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
-            <img src={pipaLogo} alt="PIPA" className="h-16" />
+            <img src={pipaLogo} alt="PIPA" className="h-12" />
           </div>
           <CardTitle className="text-2xl">Entrar</CardTitle>
           <CardDescription>Acesse sua conta para continuar</CardDescription>
