@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import pipaLogo from '@/assets/pipa-logo.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
@@ -39,13 +40,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">P</span>
-            </div>
-            <span className="font-semibold text-xl text-foreground" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              pipadriven
-            </span>
+          <div className="flex items-center justify-center mb-4">
+            <img src={pipaLogo} alt="PIPA" className="h-12" />
           </div>
           <CardTitle className="text-2xl">Entrar</CardTitle>
           <CardDescription>Acesse sua conta para continuar</CardDescription>
