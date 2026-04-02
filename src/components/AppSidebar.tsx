@@ -95,9 +95,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           </motion.div>
         )}
         {isCollapsed && (
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center mx-auto">
-            <Triangle className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img src={logoImg} alt="PIPA" className="h-8 w-auto mx-auto" />
         )}
         {!isMobile && (
           <button
