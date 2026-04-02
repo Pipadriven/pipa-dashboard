@@ -89,7 +89,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             className="flex items-center gap-2"
           >
             <img src={logoImg} alt="PIPA" className="h-8 w-auto" />
-            <span style={{ fontFamily: 'Montserrat, sans-serif' }} className="text-lg text-sidebar-foreground">
+            <span style={{ fontFamily: 'Montserrat, sans-serif' }} className="text-lg text-primary">
               <span className="font-bold">PIPA</span><span className="italic font-medium">Driven</span>
             </span>
           </motion.div>
