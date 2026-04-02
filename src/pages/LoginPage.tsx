@@ -42,6 +42,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <img src={logoImg} alt="PIPA" className="h-8 w-auto" />
+            <span className="font-semibold text-xl text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               PIPA<span className="italic">Driven</span>
             </span>
           </div>
