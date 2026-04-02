@@ -44,7 +44,7 @@ export default function LoginPage() {
               <span className="text-primary-foreground font-bold text-sm">P</span>
             </div>
             <span className="font-semibold text-xl text-foreground" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              pipadriven
+              PIPA
             </span>
           </div>
           <CardTitle className="text-2xl">Entrar</CardTitle>
