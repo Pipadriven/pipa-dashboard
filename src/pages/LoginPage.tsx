@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import logoImg from '../assets/logo-pipa.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
@@ -40,9 +41,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">P</span>
-            </div>
+            <img src={logoImg} alt="PIPA" className="h-8 w-auto" />
             <span className="font-semibold text-xl text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               PIPA<span className="italic">Driven</span>
             </span>
