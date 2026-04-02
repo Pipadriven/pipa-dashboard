@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logoImg from "../assets/logo-pipa.png";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
