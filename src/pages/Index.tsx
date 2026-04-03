@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { StatCard } from "../components/dashboard/StatCard";
 import { SalesOverviewChart } from "../components/dashboard/SalesOverviewChart";
@@ -6,23 +7,61 @@ import { FunnelOverview } from "../components/dashboard/FunnelOverview";
 import { SalesByChannel } from "../components/dashboard/SalesByChannel";
 import { VGVProgress } from "../components/dashboard/VGVProgress";
 import { BudgetComparison } from "../components/dashboard/BudgetComparison";
+import { useDashboardMetrics, PeriodType } from "../hooks/use-dashboard-metrics";
 import { Users, ShoppingCart, DollarSign, Target, Calendar, Filter, Download, ChevronDown, TrendingUp, Banknote, Eye, Building2, PiggyBank } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+
+function formatNumber(n: number): string {
+  return n.toLocaleString("pt-BR");
+}
+
+function formatCurrency(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}M`;
+  if (n >= 1_000) return formatNumber(n);
+  return n.toLocaleString("pt-BR");
+}
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 const Index = () => {
+  const [periodType, setPeriodType] = useState<PeriodType>("mensal");
+  const [referenceDate, setReferenceDate] = useState(todayISO());
+
+  const { data: metrics, isLoading } = useDashboardMetrics({ periodType, referenceDate });
+
   return (
     <DashboardLayout>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Visão Geral</h1>
         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-          <button className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">18 Out - 18 Nov</span>
-            <span className="sm:hidden">Período</span>
-          </button>
-          <button className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground">
-            Mensal <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+            <input
+              type="date"
+              value={referenceDate}
+              onChange={(e) => setReferenceDate(e.target.value)}
+              className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground bg-transparent"
+            />
+          </div>
+          <Select value={periodType} onValueChange={(v) => setPeriodType(v as PeriodType)}>
+            <SelectTrigger className="w-[110px] h-8 sm:h-9 text-xs sm:text-sm border-border text-muted-foreground">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="diario">Diário</SelectItem>
+              <SelectItem value="semanal">Semanal</SelectItem>
+              <SelectItem value="mensal">Mensal</SelectItem>
+            </SelectContent>
+          </Select>
           <button className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground">
             <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Filtrar</span>
@@ -36,10 +75,39 @@ const Index = () => {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <StatCard title="Contatos Totais" value="1.248" change={12.5} icon={Users} delay={0} />
-        <StatCard title="Vendas Realizadas" value="34" change={8.3} icon={ShoppingCart} delay={0.05} />
-        <StatCard title="Receita Total" value="4.520.000" change={15.8} icon={DollarSign} prefix="R$ " delay={0.1} />
-        <StatCard title="Taxa de Conversão" value="2,7%" change={-3.2} icon={Target} delay={0.15} />
+        <StatCard
+          title="Contatos Totais"
+          value={isLoading ? "—" : metrics ? formatNumber(metrics.contatos_totais) : "0"}
+          change={0}
+          icon={Users}
+          delay={0}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Vendas Realizadas"
+          value={isLoading ? "—" : metrics ? formatNumber(metrics.vendas_realizadas) : "0"}
+          change={0}
+          icon={ShoppingCart}
+          delay={0.05}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Receita Total"
+          value={isLoading ? "—" : metrics ? formatCurrency(metrics.receita_total) : "0"}
+          change={0}
+          icon={DollarSign}
+          prefix="R$ "
+          delay={0.1}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Taxa de Conversão"
+          value={isLoading ? "—" : metrics ? `${metrics.taxa_conversao.toLocaleString("pt-BR")}%` : "0%"}
+          change={0}
+          icon={Target}
+          delay={0.15}
+          loading={isLoading}
+        />
       </div>
 
       {/* Funnel + Sales by Channel */}
