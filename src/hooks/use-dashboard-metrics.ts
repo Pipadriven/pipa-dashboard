@@ -41,7 +41,7 @@ export function useDashboardMetrics({ periodType, referenceDate }: UseDashboardM
         .from("dashboard_metrics")
         .select("*")
         .eq("client_id", clientId!)
-        .eq("period_type", periodType)
+        .eq("period_type", periodDbMap[periodType])
         .eq("reference_date", dateOnly)
         .maybeSingle();
 
