@@ -29,12 +29,14 @@ export function useDashboardMetrics({ periodType, referenceDate }: UseDashboardM
     queryKey: ["dashboard_metrics", clientId, periodType, referenceDate],
     enabled: !!clientId,
     queryFn: async () => {
+      // Ensure YYYY-MM-DD format (strip any time component)
+      const dateOnly = referenceDate.slice(0, 10);
       const { data, error } = await supabase
         .from("dashboard_metrics")
         .select("*")
         .eq("client_id", clientId!)
         .eq("period_type", periodType)
-        .eq("reference_date", referenceDate)
+        .eq("reference_date", dateOnly)
         .maybeSingle();
 
       if (error) throw error;
