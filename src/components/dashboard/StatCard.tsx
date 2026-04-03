@@ -8,9 +8,10 @@ interface StatCardProps {
   icon: LucideIcon;
   prefix?: string;
   delay?: number;
+  loading?: boolean;
 }
 
-export function StatCard({ title, value, change, icon: Icon, prefix = "", delay = 0 }: StatCardProps) {
+export function StatCard({ title, value, change, icon: Icon, prefix = "", delay = 0, loading = false }: StatCardProps) {
   const isPositive = change >= 0;
 
   return (
@@ -27,10 +28,18 @@ export function StatCard({ title, value, change, icon: Icon, prefix = "", delay 
         </div>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-3">
-        <span className="text-lg sm:text-2xl font-bold text-foreground truncate">{prefix}{value}</span>
-        <span className={`text-[10px] sm:text-xs ${isPositive ? "badge-success" : "badge-destructive"} whitespace-nowrap`}>
-          {isPositive ? "↗" : "↘"} {Math.abs(change)}%
-        </span>
+        {loading ? (
+          <div className="h-7 sm:h-8 w-24 rounded bg-muted animate-pulse" />
+        ) : (
+          <>
+            <span className="text-lg sm:text-2xl font-bold text-foreground truncate">{prefix}{value}</span>
+            {change !== 0 && (
+              <span className={`text-[10px] sm:text-xs ${isPositive ? "badge-success" : "badge-destructive"} whitespace-nowrap`}>
+                {isPositive ? "↗" : "↘"} {Math.abs(change)}%
+              </span>
+            )}
+          </>
+        )}
       </div>
     </motion.div>
   );
