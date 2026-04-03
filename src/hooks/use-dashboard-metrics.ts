@@ -4,6 +4,12 @@ import { useAuth } from "../contexts/AuthContext";
 
 export type PeriodType = "mensal" | "semanal" | "diario";
 
+const periodDbMap: Record<PeriodType, string> = {
+  diario: "daily",
+  semanal: "weekly",
+  mensal: "monthly",
+};
+
 export interface DashboardMetrics {
   id: string;
   client_id: string;
@@ -35,7 +41,7 @@ export function useDashboardMetrics({ periodType, referenceDate }: UseDashboardM
         .from("dashboard_metrics")
         .select("*")
         .eq("client_id", clientId!)
-        .eq("period_type", periodType)
+        .eq("period_type", periodDbMap[periodType])
         .eq("reference_date", dateOnly)
         .maybeSingle();
 
