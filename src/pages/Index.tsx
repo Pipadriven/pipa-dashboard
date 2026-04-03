@@ -33,6 +33,7 @@ function todayISO(): string {
 }
 
 const Index = () => {
+  const { clientId } = useAuth();
   const [periodType, setPeriodType] = useState<PeriodType>("mensal");
   const [referenceDate, setReferenceDate] = useState(todayISO());
 
