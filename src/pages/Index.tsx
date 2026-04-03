@@ -8,6 +8,7 @@ import { SalesByChannel } from "../components/dashboard/SalesByChannel";
 import { VGVProgress } from "../components/dashboard/VGVProgress";
 import { BudgetComparison } from "../components/dashboard/BudgetComparison";
 import { useDashboardMetrics, PeriodType } from "../hooks/use-dashboard-metrics";
+import { useAuth } from "../contexts/AuthContext";
 import { Users, ShoppingCart, DollarSign, Target, Calendar, Filter, Download, ChevronDown, TrendingUp, Banknote, Eye, Building2, PiggyBank } from "lucide-react";
 import {
   Select,
