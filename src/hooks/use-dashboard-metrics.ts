@@ -4,6 +4,12 @@ import { useAuth } from "../contexts/AuthContext";
 
 export type PeriodType = "mensal" | "semanal" | "diario";
 
+const periodDbMap: Record<PeriodType, string> = {
+  diario: "daily",
+  semanal: "weekly",
+  mensal: "monthly",
+};
+
 export interface DashboardMetrics {
   id: string;
   client_id: string;
