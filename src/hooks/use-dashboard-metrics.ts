@@ -39,11 +39,7 @@ export function useDashboardMetrics({ periodType, referenceDate }: UseDashboardM
       const dateOnly = referenceDate.slice(0, 10);
       const dbPeriod = periodDbMap[periodType];
 
-      console.log("[dashboard_metrics] query inputs:", {
-        client_id: clientId,
-        period_type: dbPeriod,
-        reference_date: dateOnly,
-      });
+      console.log("[dashboard_metrics] query inputs — client_id: " + String(clientId) + " | period_type: " + dbPeriod + " | reference_date: " + dateOnly);
 
       const { data, error } = await supabase
         .from("dashboard_metrics")
@@ -53,8 +49,11 @@ export function useDashboardMetrics({ periodType, referenceDate }: UseDashboardM
         .eq("reference_date", dateOnly)
         .maybeSingle();
 
-      if (error) throw error;
-      console.log("[dashboard_metrics] result:", data);
+      if (error) {
+        console.error("[dashboard_metrics] ERROR:", JSON.stringify(error, null, 2));
+        throw error;
+      }
+      console.log("[dashboard_metrics] result:", JSON.stringify(data, null, 2));
       return data;
     },
     staleTime: 5 * 60 * 1000,
