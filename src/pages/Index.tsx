@@ -8,7 +8,7 @@ import { SalesByChannel } from "../components/dashboard/SalesByChannel";
 import { VGVProgress } from "../components/dashboard/VGVProgress";
 import { BudgetComparison } from "../components/dashboard/BudgetComparison";
 import { useDashboardMetrics, PeriodType } from "../hooks/use-dashboard-metrics";
-import { useAuth } from "../contexts/AuthContext";
+
 import { Users, ShoppingCart, DollarSign, Target, Calendar, Filter, Download, ChevronDown, TrendingUp, Banknote, Eye, Building2, PiggyBank } from "lucide-react";
 import {
   Select,
@@ -33,7 +33,7 @@ function todayISO(): string {
 }
 
 const Index = () => {
-  const { clientId } = useAuth();
+  
   const [periodType, setPeriodType] = useState<PeriodType>("mensal");
   const [referenceDate, setReferenceDate] = useState(todayISO());
 
@@ -44,7 +44,7 @@ const Index = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Visão Geral</h1>
-        <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded select-all">client_id: {clientId ?? "null"}</span>
+        
         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
           <div className="flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
