@@ -80,7 +80,7 @@ const Index = () => {
         <StatCard
           title="Contatos Totais"
           value={isLoading ? "—" : metrics ? formatNumber(metrics.contatos_totais) : "0"}
-          change={0}
+          change={variation.contatos_totais ?? 0}
           icon={Users}
           delay={0}
           loading={isLoading}
@@ -88,7 +88,7 @@ const Index = () => {
         <StatCard
           title="Vendas Realizadas"
           value={isLoading ? "—" : metrics ? formatNumber(metrics.vendas_realizadas) : "0"}
-          change={0}
+          change={variation.vendas_realizadas ?? 0}
           icon={ShoppingCart}
           delay={0.05}
           loading={isLoading}
@@ -96,7 +96,7 @@ const Index = () => {
         <StatCard
           title="Receita Total"
           value={isLoading ? "—" : metrics ? formatCurrency(metrics.receita_total) : "0"}
-          change={0}
+          change={variation.receita_total ?? 0}
           icon={DollarSign}
           prefix="R$ "
           delay={0.1}
@@ -105,7 +105,7 @@ const Index = () => {
         <StatCard
           title="Taxa de Conversão"
           value={isLoading ? "—" : metrics ? `${metrics.taxa_conversao.toLocaleString("pt-BR")}%` : "0%"}
-          change={0}
+          change={variation.taxa_conversao ?? 0}
           icon={Target}
           delay={0.15}
           loading={isLoading}
