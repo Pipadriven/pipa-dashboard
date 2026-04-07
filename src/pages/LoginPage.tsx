@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import logoImg from '../assets/logo-pipa.png';
+import logoImg from '../assets/Logo_1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
