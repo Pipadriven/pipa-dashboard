@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
@@ -19,8 +19,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [clientId, setClientId] = useState<string | null>(null);
+  const lastFetchedUserId = useRef<string | null>(null);
+  const initialized = useRef(false);
 
   const fetchProfile = async (userId: string) => {
+    // Avoid duplicate fetches for the same user
+    if (lastFetchedUserId.current === userId) return;
+    lastFetchedUserId.current = userId;
+
     const { data, error } = await supabase
       .from('profiles')
       .select('client_id')
@@ -36,20 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          // Defer profile fetch to avoid Supabase auth deadlock
-          setTimeout(() => fetchProfile(session.user.id), 0);
-        } else {
-          setClientId(null);
-        }
-        setLoading(false);
-      }
-    );
-
+    // 1. Restore session from storage first
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -57,12 +50,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fetchProfile(session.user.id);
       }
       setLoading(false);
+      initialized.current = true;
     });
+
+    // 2. Listen for subsequent auth changes (sign in/out)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        // Skip INITIAL_SESSION since getSession handles it
+        if (!initialized.current && event === 'INITIAL_SESSION') return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
+          setClientId(null);
+          lastFetchedUserId.current = null;
+        }
+        setLoading(false);
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    lastFetchedUserId.current = null; // Reset to allow fresh profile fetch
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
@@ -74,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     setClientId(null);
+    lastFetchedUserId.current = null;
     await supabase.auth.signOut();
   };
 
