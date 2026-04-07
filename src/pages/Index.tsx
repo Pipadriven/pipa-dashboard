@@ -35,7 +35,9 @@ const Index = () => {
   const [periodType, setPeriodType] = useState<PeriodType>("mensal");
   const [referenceDate, setReferenceDate] = useState(todayISO());
 
-  const { data: metrics, isLoading } = useDashboardMetrics({ periodType, referenceDate });
+  const { data, isLoading } = useDashboardMetrics({ periodType, referenceDate });
+  const metrics = data?.current ?? null;
+  const variation = data?.variation ?? { contatos_totais: null, vendas_realizadas: null, receita_total: null, taxa_conversao: null };
 
   return (
     <DashboardLayout>
