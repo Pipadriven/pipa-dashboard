@@ -129,7 +129,7 @@ export default function MarketingPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
           {/* Funil visual */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-3">
             {funnelData.map((step, i) => {
               const widthPct = Math.max(32, 100 - i * 13);
               const colors = [
@@ -149,6 +149,16 @@ export default function MarketingPage() {
                   transition={{ delay: 0.4 + i * 0.1, duration: 0.4 }}
                   className="flex flex-col items-center w-full"
                 >
+                  {i > 0 && (
+                    <div className="flex items-center gap-2 mb-3 h-5">
+                      <svg width="10" height="20" viewBox="0 0 10 20" className="text-primary shrink-0 opacity-60">
+                        <path d="M5 0 L5 15 M1 12 L5 18 L9 12" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {step.convPct && (
+                        <span className="text-[10px] text-muted-foreground">{step.convPct}</span>
+                      )}
+                    </div>
+                  )}
                   <div
                     className="rounded-lg py-3 px-4 text-center transition-all"
                     style={{ width: `${widthPct}%`, background: colors[i] }}
@@ -158,15 +168,6 @@ export default function MarketingPage() {
                     <p className="text-2xl font-bold text-white mt-1">{step.valor.toLocaleString("pt-BR")}</p>
                     <p className="text-[10px] text-white/60">{step.pct} dos Leads</p>
                   </div>
-
-                  {step.convPct && (
-                    <div className="flex items-center gap-2 my-3">
-                      <svg width="10" height="20" viewBox="0 0 10 20" className="text-primary shrink-0 opacity-60">
-                        <path d="M5 0 L5 15 M1 12 L5 18 L9 12" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span className="text-[10px] text-muted-foreground">{step.convPct}</span>
-                    </div>
-                  )}
                 </motion.div>
               );
             })}
