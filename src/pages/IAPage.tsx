@@ -1,4 +1,5 @@
 import { DashboardLayout } from "../components/DashboardLayout";
+import { DemoBadge } from "../components/DemoBadge";
 import { StatCard } from "../components/dashboard/StatCard";
 import { motion } from "framer-motion";
 import {
@@ -15,8 +16,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,7 +28,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { useTheme } from "../hooks/use-theme";
+import { useChartTheme } from "../hooks/use-chart-theme";
 
 // Atendimentos IA por semana
 const weeklyAI = [
@@ -77,14 +76,7 @@ const engagementPie = [
 ];
 
 export default function IAPage() {
-  const { theme } = useTheme();
-  const gridColor = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
-  const tooltipBg = theme === "dark" ? "#1C1C1C" : "#FFFFFF";
-  const tooltipBorder = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tooltipColor = theme === "dark" ? "#FFFFFF" : "#003D2B";
-  const areaFill = theme === "dark" ? "rgba(255,138,0,0.15)" : "rgba(255,138,30,0.1)";
-  const areaFill2 = theme === "dark" ? "rgba(160,160,160,0.1)" : "rgba(100,100,100,0.08)";
+  const { areaFill, areaFill2, gridColor, tickColor, tooltipBg, tooltipBorder, tooltipColor } = useChartTheme();
 
   return (
     <DashboardLayout>
@@ -101,6 +93,8 @@ export default function IAPage() {
           </button>
         </div>
       </div>
+
+      <DemoBadge nota="Atendimentos, objeções e follow-up da PIPA ainda são de exemplo." />
 
       {/* ══════ PRÉ-VENDA ══════ */}
       <div className="mb-2">

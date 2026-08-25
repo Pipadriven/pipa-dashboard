@@ -7,13 +7,14 @@ import {
   LayoutDashboard,
   Megaphone,
   HandCoins,
+  Network,
   Bot,
   Settings,
   HelpCircle,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Triangle,
+
 } from "lucide-react";
 import { useIsMobile } from "../hooks/use-mobile";
 
@@ -21,6 +22,7 @@ const mainItems = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
   { title: "Marketing", url: "/marketing", icon: Megaphone },
   { title: "Vendas", url: "/vendas", icon: HandCoins },
+  { title: "Rede de Parceiros", url: "/rede", icon: Network },
   { title: "PIPA", url: "/ia", icon: Bot },
 ];
 

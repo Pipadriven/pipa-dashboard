@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from "recharts";
 import { ChevronDown } from "lucide-react";
-import { useTheme } from "../../hooks/use-theme";
+import { useChartTheme } from "../../hooks/use-chart-theme";
 
 const data = [
   { day: "Dom", value: 2200 },
@@ -14,10 +14,9 @@ const data = [
 ];
 
 export function TotalSubscriberChart() {
-  const { theme } = useTheme();
-  const activeColor = theme === "dark" ? "#FF8A00" : "#FF8A1E";
-  const inactiveColor = theme === "dark" ? "rgba(255, 138, 0, 0.15)" : "rgba(255, 138, 30, 0.2)";
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
+  const { dark, tickColor } = useChartTheme();
+  const activeColor = dark ? "#FF8A00" : "#FF8A1E";
+  const inactiveColor = dark ? "rgba(255, 138, 0, 0.15)" : "rgba(255, 138, 30, 0.2)";
 
   return (
     <motion.div

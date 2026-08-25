@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { useTheme } from "../../hooks/use-theme";
+import { useChartTheme } from "../../hooks/use-chart-theme";
 
 const data = [
   { canal: "Mídia Paga", vendas: 14, receita: 2100000 },
@@ -14,12 +14,8 @@ const darkBarColors = ["#FF8A00", "#FFA940", "#CC6E00", "#A0A0A0", "#4A4A4A"];
 const lightBarColors = ["#FF8A1E", "#FFA940", "#003D2B", "#A0A0A0", "#D1F2E6"];
 
 export function SalesByChannel() {
-  const { theme } = useTheme();
-  const colors = theme === "dark" ? darkBarColors : lightBarColors;
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
-  const tooltipBg = theme === "dark" ? "#1C1C1C" : "#FFFFFF";
-  const tooltipBorder = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tooltipColor = theme === "dark" ? "#FFFFFF" : "#003D2B";
+  const { dark, tickColor, tooltipBg, tooltipBorder, tooltipColor } = useChartTheme();
+  const colors = dark ? darkBarColors : lightBarColors;
 
   return (
     <motion.div

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ReferenceLine } from "recharts";
-import { useTheme } from "../../hooks/use-theme";
+import { useChartTheme } from "../../hooks/use-chart-theme";
 
 const data = [
   { mes: "Jun", orcado: 2800000, realizado: 2750000 },
@@ -17,12 +17,8 @@ function formatValue(value: number) {
 }
 
 export function BudgetComparison() {
-  const { theme } = useTheme();
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
-  const tooltipBg = theme === "dark" ? "#1C1C1C" : "#FFFFFF";
-  const tooltipBorder = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tooltipColor = theme === "dark" ? "#FFFFFF" : "#003D2B";
-  const orcadoColor = theme === "dark" ? "#4A4A4A" : "#D1D5DB";
+  const { dark, tickColor, tooltipBg, tooltipBorder, tooltipColor } = useChartTheme();
+  const orcadoColor = dark ? "#4A4A4A" : "#D1D5DB";
 
   const totalOrcado = data.reduce((s, d) => s + d.orcado, 0);
   const totalRealizado = data.reduce((s, d) => s + d.realizado, 0);

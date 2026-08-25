@@ -7,8 +7,8 @@ import { FunnelOverview } from "../components/dashboard/FunnelOverview";
 import { SalesByChannel } from "../components/dashboard/SalesByChannel";
 import { VGVProgress } from "../components/dashboard/VGVProgress";
 import { BudgetComparison } from "../components/dashboard/BudgetComparison";
-import { useDashboardMetrics, PeriodType } from "../hooks/use-dashboard-metrics";
-import { Users, ShoppingCart, DollarSign, Target, Calendar, Filter, Download, ChevronDown, TrendingUp, Banknote, Eye, Building2, PiggyBank } from "lucide-react";
+import { useDashboardMetrics, PERIODOS } from "../hooks/use-dashboard-metrics";
+import { Users, ShoppingCart, DollarSign, Target, Calendar, Download } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -27,17 +27,9 @@ function formatCurrency(n: number): string {
   return n.toLocaleString("pt-BR");
 }
 
-function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 const Index = () => {
-  const [periodType, setPeriodType] = useState<PeriodType>("mensal");
-  const [referenceDate, setReferenceDate] = useState(todayISO());
-
-  const { data, isLoading } = useDashboardMetrics({ periodType, referenceDate });
-  const metrics = data?.current ?? null;
-  const variation = data?.variation ?? { contatos_totais: null, vendas_realizadas: null, receita_total: null, taxa_conversao: null };
+  const [dias, setDias] = useState(30);
+  const { data: m, isLoading } = useDashboardMetrics(dias);
 
   return (
     <DashboardLayout>
@@ -45,29 +37,17 @@ const Index = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Visão Geral</h1>
         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-            <input
-              type="date"
-              value={referenceDate}
-              onChange={(e) => setReferenceDate(e.target.value)}
-              className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground bg-transparent"
-            />
-          </div>
-          <Select value={periodType} onValueChange={(v) => setPeriodType(v as PeriodType)}>
+          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+          <Select value={String(dias)} onValueChange={(v) => setDias(Number(v))}>
             <SelectTrigger className="w-[110px] h-8 sm:h-9 text-xs sm:text-sm border-border text-muted-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="diario">Diário</SelectItem>
-              <SelectItem value="semanal">Semanal</SelectItem>
-              <SelectItem value="mensal">Mensal</SelectItem>
+              {PERIODOS.map((p) => (
+                <SelectItem key={p.valor} value={String(p.valor)}>{p.rotulo}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <button className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground">
-            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Filtrar</span>
-          </button>
           <button className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border border-border hover:bg-secondary transition-colors text-muted-foreground">
             <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Exportar</span>
@@ -78,39 +58,79 @@ const Index = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <StatCard
-          title="Contatos Totais"
-          value={isLoading ? "—" : metrics ? formatNumber(metrics.contatos_totais) : "0"}
-          change={variation.contatos_totais ?? 0}
+          title="Leads Recebidos"
+          value={isLoading ? "—" : formatNumber(m?.leads ?? 0)}
+          change={m?.var_leads ?? 0}
           icon={Users}
           delay={0}
           loading={isLoading}
         />
         <StatCard
           title="Vendas Realizadas"
-          value={isLoading ? "—" : metrics ? formatNumber(metrics.vendas_realizadas) : "0"}
-          change={variation.vendas_realizadas ?? 0}
+          value={isLoading ? "—" : formatNumber(m?.vendas ?? 0)}
+          change={m?.var_vendas ?? 0}
           icon={ShoppingCart}
           delay={0.05}
           loading={isLoading}
         />
         <StatCard
           title="Receita Total"
-          value={isLoading ? "—" : metrics ? formatCurrency(metrics.receita_total) : "0"}
-          change={variation.receita_total ?? 0}
+          value={isLoading ? "—" : formatCurrency(m?.receita ?? 0)}
+          change={m?.var_receita ?? 0}
           icon={DollarSign}
           prefix="R$ "
           delay={0.1}
           loading={isLoading}
         />
+        {/* o denominador entra no rótulo: em Vendas e na Rede
+            "conversão" quer dizer outra conta */}
         <StatCard
-          title="Taxa de Conversão"
-          value={isLoading ? "—" : metrics ? `${metrics.taxa_conversao.toLocaleString("pt-BR")}%` : "0%"}
-          change={variation.taxa_conversao ?? 0}
+          title="Conversão Lead→Venda"
+          value={isLoading ? "—" : m?.conversao_contato_venda != null
+            ? `${m.conversao_contato_venda.toLocaleString("pt-BR")}%` : "—"}
+          change={0}
           icon={Target}
           delay={0.15}
           loading={isLoading}
         />
       </div>
+
+      {/* de onde vieram os leads: as duas entradas do mesmo funil */}
+      {!isLoading && (m?.leads ?? 0) > 0 && (
+        <div className="chart-card mb-4 sm:mb-6">
+          <div className="flex items-baseline justify-between gap-3 mb-3">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+              Origem dos leads
+            </h3>
+            <span className="text-xs text-muted-foreground">
+              mídia paga vs. rede de parceiros
+            </span>
+          </div>
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full bg-primary"
+              style={{ width: `${((m?.leads_midia ?? 0) / (m?.leads || 1)) * 100}%` }}
+            />
+            <div
+              className="h-full"
+              style={{
+                width: `${((m?.leads_rede ?? 0) / (m?.leads || 1)) * 100}%`,
+                background: "hsl(var(--rede-ativo))",
+              }}
+            />
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-2">
+              <i className="h-2 w-2 rounded-full bg-primary" />
+              Mídia paga · {formatNumber(m?.leads_midia ?? 0)}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <i className="h-2 w-2 rounded-full" style={{ background: "hsl(var(--rede-ativo))" }} />
+              Rede de parceiros · {formatNumber(m?.leads_rede ?? 0)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Funnel + Sales by Channel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">

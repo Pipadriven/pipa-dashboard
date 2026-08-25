@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Filter, ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { useTheme } from "../../hooks/use-theme";
+import { useChartTheme } from "../../hooks/use-chart-theme";
 
 const data = [
   { month: "Out", Direto: 900, Indicação: 700, Orgânico: 500, Social: 500, Outros: 388 },
@@ -34,13 +34,8 @@ const lightColors: Record<string, string> = {
 };
 
 export function SalesOverviewChart() {
-  const { theme } = useTheme();
-  const COLORS = theme === "dark" ? darkColors : lightColors;
-  const gridColor = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
-  const tooltipBg = theme === "dark" ? "#1C1C1C" : "#FFFFFF";
-  const tooltipBorder = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tooltipColor = theme === "dark" ? "#FFFFFF" : "#003D2B";
+  const { dark, gridColor, tickColor, tooltipBg, tooltipBorder, tooltipColor } = useChartTheme();
+  const COLORS = dark ? darkColors : lightColors;
 
   return (
     <motion.div

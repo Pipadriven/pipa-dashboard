@@ -1,4 +1,5 @@
 import { DashboardLayout } from "../components/DashboardLayout";
+import { DemoBadge } from "../components/DemoBadge";
 import { StatCard } from "../components/dashboard/StatCard";
 import { motion } from "framer-motion";
 import {
@@ -10,7 +11,6 @@ import {
   Handshake,
   Calendar,
   Filter,
-  ChevronDown,
 } from "lucide-react";
 import {
   BarChart,
@@ -24,7 +24,7 @@ import {
   Area,
   Cell,
 } from "recharts";
-import { useTheme } from "../hooks/use-theme";
+import { useChartTheme } from "../hooks/use-chart-theme";
 
 // Pipeline de vendas
 const pipelineData = [
@@ -69,13 +69,7 @@ const productData = [
 ];
 
 export default function VendasPage() {
-  const { theme } = useTheme();
-  const gridColor = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tickColor = theme === "dark" ? "#A0A0A0" : "#6B6B6B";
-  const tooltipBg = theme === "dark" ? "#1C1C1C" : "#FFFFFF";
-  const tooltipBorder = theme === "dark" ? "#2A2A2A" : "#E0DDD8";
-  const tooltipColor = theme === "dark" ? "#FFFFFF" : "#003D2B";
-  const areaFill = theme === "dark" ? "rgba(255,138,0,0.15)" : "rgba(255,138,30,0.1)";
+  const { areaFill, gridColor, tickColor, tooltipBg, tooltipBorder, tooltipColor } = useChartTheme();
 
   return (
     <DashboardLayout>
@@ -92,6 +86,8 @@ export default function VendasPage() {
           </button>
         </div>
       </div>
+
+      <DemoBadge nota="Pipeline, receita e ranking de vendedores ainda são de exemplo." />
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
