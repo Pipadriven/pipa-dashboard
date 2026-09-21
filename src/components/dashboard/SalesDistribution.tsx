@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { DemoChip } from "../DemoChip";
 
 const data = [
   { name: "Site", value: 374.82, color: "#FF8A00" },

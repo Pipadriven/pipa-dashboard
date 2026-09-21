@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useChartTheme } from "../../hooks/use-chart-theme";
+import { DemoChip } from "../DemoChip";
 
 const data = [
   { nome: "Res. Aurora", orcado: 45000000, realizado: 31500000 },

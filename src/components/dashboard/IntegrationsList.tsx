@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { DemoChip } from "../DemoChip";
 
 const integrations = [
   { name: "Stripe", type: "Financeiro", rate: 40, color: "#FF8A00" },
