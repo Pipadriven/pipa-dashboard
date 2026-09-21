@@ -1,0 +1,383 @@
+/* Tipografia do manual da marca PIPADriven 2026 (p. 13):
+   Archivo = títulos e números · Manrope = texto · JetBrains Mono = dado/rótulo */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ============================================================
+     PIPA — modo claro (padrão)
+
+     Paleta fechada do manual (p. 12): preto, branco e laranja.
+     Laranja #FC9A00 · Preto #0A0A0A · Branco #FFFFFF
+     Neutros de apoio: #F4F2EF #E6E2DC #D8D3CB #9A9A9A #4A4A4A
+     Proporção: 60% neutro claro · 30% preto · 10% laranja.
+
+     O laranja é SINAL: direciona atenção, marca dado e ação.
+     Nunca como fundo de texto longo, nunca como moldura padrão de card.
+     ============================================================ */
+  :root {
+    /* Tipografia */
+    --font-display: 'Archivo', system-ui, sans-serif;
+    --font-sans: 'Manrope', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --background: 36 19% 95%;        /* #F4F2EF */
+    --foreground: 0 0% 4%;           /* #0A0A0A — era verde-petróleo, fora da marca */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+
+    --primary: 37 100% 49%;          /* #FC9A00 — laranja exato do manual */
+    --primary-foreground: 0 0% 4%;   /* preto sobre laranja: 10,9:1 (branco reprovava AA) */
+
+    --secondary: 36 17% 88%;         /* #E6E2DC */
+    --secondary-foreground: 0 0% 4%;
+
+    --muted: 36 17% 88%;             /* #E6E2DC */
+    --muted-foreground: 0 0% 29%;    /* #4A4A4A — 8,9:1; o #9A9A9A anterior reprovava */
+
+    --accent: 37 100% 49%;
+    --accent-foreground: 0 0% 4%;
+
+    --destructive: 4 76% 40%;        /* #B42318 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 36 17% 88%;            /* #E6E2DC */
+    --input: 37 14% 82%;             /* #D8D3CB — borda de campo, mais firme que a de card */
+    --ring: 37 100% 49%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar — preto da marca, também no modo claro */
+    --sidebar-bg: 0 0% 4%;
+    --sidebar-fg: 0 0% 60%;
+    --sidebar-active: 0 0% 100%;
+    --sidebar-hover: 0 0% 10%;
+    --sidebar-accent: 37 100% 49%;
+
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 60%;
+    --sidebar-primary: 37 100% 49%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent-bg: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 37 100% 49%;
+
+    /* Gráficos.
+       Os nomes "green" são legado do tema anterior — a marca não tem verde.
+       Mantidos para não quebrar tailwind.config e os componentes; os VALORES
+       agora são preto e neutro. Série líder em laranja, resto em cinza. */
+    --chart-orange: 37 100% 49%;
+    --chart-orange-light: 36 100% 39%;   /* #C97800 */
+    --chart-green: 0 0% 4%;              /* preto */
+    --chart-green-water: 36 17% 88%;     /* #E6E2DC */
+    --chart-gray: 0 0% 60%;
+
+    /* Status funcionais — deliberadamente fora da paleta da marca,
+       pela mesma razão já registrada nos chips da Rede: no sistema PIPA
+       o laranja significa "decida isto", não "está tudo bem". */
+    --success: 153 61% 23%;              /* #17603F */
+    --success-foreground: 144 28% 93%;   /* #E8F2EC */
+    --warning: 36 100% 39%;              /* #C97800 */
+    --warning-foreground: 0 0% 4%;
+
+    /* PIPA specific */
+    --pipa-orange: 37 100% 49%;
+    --pipa-orange-light: 37 100% 60%;
+    --pipa-orange-dark: 36 100% 39%;
+    --pipa-surface: 0 0% 100%;
+    --pipa-border: 36 17% 88%;
+
+    /* Painel da Rede — situação do corretor.
+       Verde/âmbar/vermelho, deliberadamente fora do laranja da marca. */
+    --rede-ativo: 153 61% 23%;
+    --rede-esfriando: 36 100% 39%;
+    --rede-parado: 4 76% 40%;
+    --rede-nunca: 0 0% 60%;
+  }
+
+  /* ============================================================
+     PIPA — modo escuro
+     Fundo preto da marca, superfícies em neutros muito escuros.
+     ============================================================ */
+  .dark {
+    --background: 0 0% 4%;           /* #0A0A0A */
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 8%;                 /* #141414 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 37 100% 49%;
+    --primary-foreground: 0 0% 4%;
+
+    --secondary: 0 0% 15%;           /* #262626 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;    /* #9A9A9A sobre #0A0A0A: 6,4:1 */
+
+    --accent: 37 100% 49%;
+    --accent-foreground: 0 0% 4%;
+
+    --destructive: 8 100% 83%;       /* #FFB4A8 — clareado para ler no escuro */
+    --destructive-foreground: 0 0% 4%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 37 100% 49%;
+
+    /* Sidebar */
+    --sidebar-bg: 0 0% 0%;
+    --sidebar-fg: 0 0% 60%;
+    --sidebar-active: 0 0% 100%;
+    --sidebar-hover: 0 0% 10%;
+    --sidebar-accent: 37 100% 49%;
+
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 60%;
+    --sidebar-primary: 37 100% 49%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent-bg: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 37 100% 49%;
+
+    /* Gráficos */
+    --chart-orange: 37 100% 49%;
+    --chart-orange-light: 37 100% 60%;
+    --chart-green: 0 0% 100%;
+    --chart-green-water: 0 0% 15%;
+    --chart-gray: 0 0% 43%;
+
+    /* Status funcionais */
+    --success: 148 51% 67%;          /* #7FD6A8 */
+    --success-foreground: 152 35% 11%;
+    --warning: 37 100% 60%;
+    --warning-foreground: 0 0% 4%;
+
+    /* PIPA specific */
+    --pipa-orange: 37 100% 49%;
+    --pipa-orange-light: 37 100% 60%;
+    --pipa-orange-dark: 36 100% 39%;
+    --pipa-surface: 0 0% 8%;
+    --pipa-border: 0 0% 15%;
+
+    --rede-ativo: 148 51% 67%;
+    --rede-esfriando: 37 100% 60%;
+    --rede-parado: 8 100% 83%;
+    --rede-nunca: 0 0% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;           /* manual: corpo 15–18px, entrelinha 1,55–1,7 */
+  }
+
+  /* Títulos em Archivo, sempre com tracking negativo (manual, p. 13) */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  h1 { letter-spacing: -0.03em; }
+
+  /* Foco visível em toda parte — antes só os inputs tinham anel */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* ---------- Tipografia de dado ---------- */
+
+  /* Rótulo de métrica: JetBrains Mono, caixa alta, +12% tracking */
+  .metric-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Número de métrica: Archivo Bold, tracking negativo */
+  .metric-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: hsl(var(--foreground));
+  }
+
+  .font-display { font-family: var(--font-display); }
+  .font-mono-data { font-family: var(--font-mono); letter-spacing: 0.04em; }
+
+  /* ---------- Superfícies ---------- */
+
+  /* Sem a borda-esquerda laranja: ela punha a cor de sinal em TODO card,
+     zerando a função de sinal e estourando os 10% do manual. */
+  .stat-card {
+    @apply bg-card rounded-xl p-4 sm:p-5 border border-border transition-colors duration-200;
+  }
+  .stat-card:hover {
+    border-color: hsl(var(--input));
+  }
+
+  /* O card que pede decisão — aqui o laranja ganha peso. Um por tela. */
+  .stat-card-signal {
+    @apply rounded-xl p-4 sm:p-5 transition-colors duration-200;
+    background: hsl(var(--foreground));
+    border: 1px solid hsl(var(--foreground));
+  }
+  .stat-card-signal .metric-label { color: hsl(var(--primary)); }
+  .stat-card-signal .metric-value { color: hsl(var(--primary)); }
+
+  .chart-card {
+    @apply bg-card rounded-xl p-5 border border-border;
+  }
+
+  /* ---------- Chips de variação ---------- */
+
+  .badge-success {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md;
+    font-family: var(--font-mono);
+    color: hsl(var(--success));
+    background: hsl(var(--success-foreground));
+  }
+
+  .badge-destructive {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md;
+    font-family: var(--font-mono);
+    color: hsl(var(--destructive));
+    background: hsl(var(--destructive) / 0.12);
+  }
+
+  .badge-neutral {
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md;
+    font-family: var(--font-mono);
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted));
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar-item {
+    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer;
+    color: hsl(var(--sidebar-fg));
+    min-height: 44px;              /* alvo de toque */
+  }
+
+  .sidebar-item:hover {
+    background: hsl(var(--sidebar-hover));
+    color: hsl(var(--sidebar-active));
+  }
+
+  /* Ativo: fundo neutro + barra laranja. O laranja marca a posição,
+     não pinta o texto — mantém o contraste e economiza o sinal. */
+  .sidebar-item-active {
+    background: hsl(var(--sidebar-hover));
+    color: hsl(var(--sidebar-active));
+    font-weight: 600;
+  }
+  .sidebar-item-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 24px;
+    border-radius: 0 3px 3px 0;
+    background: hsl(var(--primary));
+  }
+
+  /* Seção ainda não liberada: o item continua navegável e legível,
+     mas recua um passo na hierarquia. */
+  .sidebar-item-preview {
+    color: hsl(var(--sidebar-fg) / 0.75);
+  }
+
+  .badge-preview {
+    @apply shrink-0 rounded px-1.5 py-0.5;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.12);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    line-height: 1.4;
+  }
+
+  /* ---------- Elementos de marca ---------- */
+
+  .pipa-divider {
+    width: 48px;
+    height: 4px;
+    background: hsl(var(--primary));
+    border-radius: 2px;
+    margin: 1rem 0;
+  }
+
+  .pipa-badge {
+    @apply inline-block text-xs font-semibold uppercase px-3 py-1 rounded;
+    font-family: var(--font-mono);
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.12);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    letter-spacing: 0.12em;
+  }
+
+  /* Chips de situação: a cor nunca aparece sozinha, sempre com o rótulo */
+  .rede-chip {
+    @apply inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold uppercase
+           tracking-wider px-2 py-0.5 rounded border whitespace-nowrap;
+    font-family: var(--font-mono);
+  }
+  .rede-chip i { @apply h-1.5 w-1.5 rounded-full shrink-0; background: currentColor; }
+  .rede-ativo     { color: hsl(var(--rede-ativo));     background: hsl(var(--rede-ativo) / 0.12);     border-color: hsl(var(--rede-ativo) / 0.35); }
+  .rede-esfriando { color: hsl(var(--rede-esfriando)); background: hsl(var(--rede-esfriando) / 0.12); border-color: hsl(var(--rede-esfriando) / 0.35); }
+  .rede-parado    { color: hsl(var(--rede-parado));    background: hsl(var(--rede-parado) / 0.10);    border-color: hsl(var(--rede-parado) / 0.35); }
+  .rede-nunca     { color: hsl(var(--rede-nunca));     background: hsl(var(--rede-nunca) / 0.10);     border-color: hsl(var(--rede-nunca) / 0.30); }
+  .rede-nunca i   { border-radius: 1px; }
+
+  /* Fundo pontilhado removido: competia com os gráficos.
+     A classe fica para não quebrar DashboardLayout. */
+  .pipa-dot-bg {
+    background-image: none;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
