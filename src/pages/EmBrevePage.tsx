@@ -2,19 +2,21 @@ import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { CONTATO_COMERCIAL, mailto } from "../config/contato";
+import symbolOrange from "../assets/pipa-symbol.png";
 import {
   ArrowRight,
+  Banknote,
   Bot,
   CalendarCheck,
   Check,
+  Filter,
+  Gauge,
   HandCoins,
+  Layers,
   Megaphone,
-  MessageSquare,
-  Percent,
-  Send,
+  Repeat2,
   Sparkles,
   Timer,
-  UserCheck,
   Users,
 } from "lucide-react";
 import type { ComponentType } from "react";
@@ -26,7 +28,6 @@ interface Recurso {
 }
 
 interface Modulo {
-  chapeu: string;
   titulo: string;
   icon: ComponentType<{ className?: string }>;
   promessa: string;
@@ -39,104 +40,107 @@ interface Modulo {
 /**
  * Páginas dos módulos que ainda não entraram no ar.
  *
- * O conteúdo descreve produtos que existem de fato no roteiro da PIPA
- * (Difusão, Reativação, Gestor), não recursos genéricos inventados.
+ * As três telas — Marketing, Vendas e PIPA — pertencem ao MESMO fluxo: o
+ * canal de aquisição DIRETO da incorporadora (a mídia própria dela, o time
+ * próprio dela, o SDR de IA que atende esse lead). É diferente da Rede de
+ * Parceiros, que já está no ar. A tese do canal direto é pincelada em cada
+ * tela pelo "eixo" no topo do hero.
  *
- * Substituiu três telas que renderizavam dashboards completos com números
- * fabricados — 6.527 leads, R$ 42,30 de CPL — atrás de um selo pequeno de
- * "dados de demonstração". Em reunião com cliente aquilo é um risco real:
- * um print daquela tela é indistinguível de dado verdadeiro.
+ * O conteúdo espelha as métricas que existiam nessas abas na v0, para que a
+ * apresentação prometa exatamente o que o módulo vai medir.
+ *
+ * ⚠ PIPA não é "perguntar ao painel" — isso é a Rede/Gestor. PIPA é o agente
+ * SDR que recebe o lead do canal direto e faz o primeiro atendimento.
  */
+const EIXO = "Canal de aquisição direto da incorporadora";
+
 const MODULOS: Record<string, Modulo> = {
   "/marketing": {
-    chapeu: "Próximo módulo",
     titulo: "Marketing",
     icon: Megaphone,
-    promessa: "A campanha chega na rede inteira sem lista de transmissão.",
+    promessa: "Do investimento em mídia ao lead qualificado, campanha por campanha.",
     descricao:
-      "A arte que o marketing fez hoje sai do canal para o recorte certo de corretores — em grupos, com intervalo entre eles, para não queimar o número. E o lead que esfriou volta a ser trabalhado sozinho.",
+      "Antes da rede de parceiros existe o canal próprio da incorporadora: a mídia paga que ela roda em nome do empreendimento. Este módulo mostra quanto cada campanha custa, de onde vem cada lead e onde ele qualifica — ou trava.",
     recursos: [
       {
-        icon: Send,
-        titulo: "Difusão com recorte",
+        icon: Banknote,
+        titulo: "Custo por lead e investimento",
         texto:
-          "Escolha o público por empreendimento, imobiliária ou situação. Envio em grupos com intervalo, trava de repetição e registro de quem recebeu.",
+          "CPL médio, investimento em mídia e campanhas ativas lado a lado — para ver qual campanha traz lead barato e qual só queima verba.",
+      },
+      {
+        icon: Filter,
+        titulo: "Qualificação do funil",
+        texto:
+          "Taxa de qualificação e volume de leads qualificados etapa a etapa — MQL, SQL, visita — para achar onde o lead esfria.",
       },
       {
         icon: Timer,
-        titulo: "Régua de reativação",
+        titulo: "Origem e lead time",
         texto:
-          "Oito toques espaçados para cliente parado. Na primeira resposta a cadência para, o CRM é atualizado e um corretor recebe o lead com briefing.",
+          "Leads por canal de origem e o tempo médio entre cada etapa, de quando o lead entra até quando avança.",
+      },
+    ],
+    jaNoAr:
+      "A Visão Geral já separa os leads por origem — mídia paga e rede — com dado real do banco.",
+  },
+  "/vendas": {
+    titulo: "Vendas",
+    icon: HandCoins,
+    promessa: "O que o time próprio fecha, do primeiro contato à escritura.",
+    descricao:
+      "O outro lado do canal direto: as vendas que o time da própria incorporadora fecha com os leads da mídia dela. Ticket, ciclo e giro das unidades sem depender de planilha.",
+    recursos: [
+      {
+        icon: Gauge,
+        titulo: "Ticket e ciclo de venda",
+        texto:
+          "Ticket médio, ciclo médio até o fechamento e taxa de conversão — o retrato de quão rápido e quão caro o time converte.",
+      },
+      {
+        icon: Layers,
+        titulo: "Giro de estoque",
+        texto:
+          "Giro das unidades e vendas por empreendimento, para saber qual produto sai e qual está encalhando.",
       },
       {
         icon: Users,
-        titulo: "Origem por canal",
+        titulo: "Desempenho do time",
         texto:
-          "Mídia paga e rede de parceiros no mesmo funil, com CAC por canal — para saber onde o investimento está comprando volume e onde está comprando ruído.",
+          "Top vendedores, novos clientes e negócios ativos — quem está puxando o resultado e quanto ainda está em aberto.",
       },
     ],
     jaNoAr:
-      "A Visão Geral já mostra a origem dos leads e o CAC por canal com dado real.",
+      "Receita, vendas e conversão do período já estão na Visão Geral, vindas do banco.",
   },
-  "/vendas": {
-    chapeu: "Próximo módulo",
-    titulo: "Vendas",
-    icon: HandCoins,
-    promessa: "O gerente comercial decide pelo WhatsApp, no mesmo número da rede.",
+  "/ia": {
+    titulo: "PIPA",
+    icon: Bot,
+    promessa: "O SDR que atende cada lead do canal direto em segundos.",
     descricao:
-      "Sem painel novo para aprender e sem outro número para gerenciar. O gerente consulta a operação por conversa e é avisado no instante em que um corretor agenda visita ou reserva unidade.",
+      "Quando um lead entra pela mídia da incorporadora, a PIPA responde na hora, qualifica, agenda a visita e reativa quem esfriou — antes de qualquer pessoa do time tocar no lead. É o agente de pré-venda do canal direto, não um painel para consultar.",
     recursos: [
       {
-        icon: Percent,
-        titulo: "Exceção de desconto",
+        icon: Timer,
+        titulo: "Primeiro atendimento em segundos",
         texto:
-          "O pedido chega com unidade, corretor e percentual. Aprovar ou recusar é uma resposta — e o SLA corre visível até a decisão.",
+          "A PIPA responde o lead assim que ele entra. Responder em 5 minutos converte 4× mais que em 1 hora — e ela não dorme.",
       },
       {
         icon: CalendarCheck,
-        titulo: "Aviso de visita e reserva",
+        titulo: "Qualifica e agenda sozinha",
         texto:
-          "Notificação no momento em que acontece, não no relatório do dia seguinte. Reserva prestes a expirar também avisa.",
+          "Faz as perguntas de qualificação, mede o engajamento e agenda a visita direto na agenda do time, sem intervenção.",
       },
       {
-        icon: UserCheck,
-        titulo: "Tabela sempre na versão certa",
+        icon: Repeat2,
+        titulo: "Reativa o lead frio",
         texto:
-          "Mandar a tabela vigente para a rede em um comando, e ver quem ainda está vendendo com versão antiga.",
+          "Régua de follow-up para quem parou de responder, com as objeções mapeadas e as conversões que a reativação trouxe de volta.",
       },
     ],
     jaNoAr:
-      "Exceções, reservas e agenda já alimentam as notificações do painel hoje.",
-  },
-  "/ia": {
-    chapeu: "Próximo módulo",
-    titulo: "PIPA",
-    icon: Bot,
-    promessa: "Perguntar à operação em vez de procurar o número no painel.",
-    descricao:
-      "A camada de conversa da plataforma. Em vez de abrir relatório e filtrar, o gestor pergunta — e a resposta vem com o dado que já está no banco, na mesma janela onde ele trabalha o dia inteiro.",
-    recursos: [
-      {
-        icon: MessageSquare,
-        titulo: "Painel por conversa",
-        texto:
-          "“Quantas visitas ficaram sem retorno esta semana?” devolve a lista, não um gráfico para interpretar.",
-      },
-      {
-        icon: Sparkles,
-        titulo: "Leitura, não só número",
-        texto:
-          "O que mudou desde a última consulta e por quê — a queda de etapa, o corretor que parou, o canal que passou a converter.",
-      },
-      {
-        icon: Timer,
-        titulo: "Resumo no seu horário",
-        texto:
-          "Um resumo da operação na hora em que você começa o dia, com o que pede decisão no topo.",
-      },
-    ],
-    jaNoAr:
-      "As leituras do funil e do VGV na Visão Geral já usam a mesma lógica de interpretação.",
+      "As visitas e o tempo de resposta que a PIPA otimiza já são medidos na Rede de Parceiros hoje.",
   },
 };
 
@@ -146,8 +150,6 @@ export default function EmBrevePage() {
 
   if (!m) return null;
 
-  const Icone = m.icon;
-
   return (
     <DashboardLayout>
       <motion.div
@@ -156,13 +158,35 @@ export default function EmBrevePage() {
         transition={{ duration: 0.4 }}
         className="mx-auto flex w-full max-w-4xl flex-col gap-8 py-2"
       >
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-2xl bg-foreground p-8 sm:p-12">
+        {/* Hero — sempre escuro nos dois temas.
+            Usa surface-invert (não inverte no dark) + borda hairline que
+            desenha a peça quando o fundo da página também é escuro. */}
+        <section
+          className="relative overflow-hidden rounded-2xl p-8 sm:p-12"
+          style={{
+            background: "hsl(var(--surface-invert))",
+            border: "1px solid hsl(var(--surface-invert-border) / 0.1)",
+          }}
+        >
+          {/* Malha da marca cortada pela borda (manual, p. 14): escala grande,
+              atrás do conteúdo, em laranja sobre fundo escuro. */}
+          <img
+            src={symbolOrange}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-16 -right-16 w-[420px] max-w-none opacity-[0.07]"
+          />
+
           <div className="relative flex flex-col gap-6">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground">
-              <Sparkles className="h-3.5 w-3.5" />
-              {m.chapeu}
-            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground">
+                <Sparkles className="h-3.5 w-3.5" />
+                Próximo módulo
+              </span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/40">
+                {EIXO}
+              </span>
+            </div>
 
             <div className="flex flex-col gap-4">
               <h1 className="m-0 font-display text-[34px] font-bold leading-[1.1] text-white sm:text-[44px]">
@@ -190,8 +214,6 @@ export default function EmBrevePage() {
               </span>
             </div>
           </div>
-
-          <Icone className="pointer-events-none absolute -bottom-10 -right-8 h-56 w-56 text-white/[0.04]" />
         </section>
 
         {/* O que o módulo entrega */}
