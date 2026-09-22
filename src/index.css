@@ -95,6 +95,14 @@
     --pipa-surface: 0 0% 100%;
     --pipa-border: 36 17% 88%;
 
+    /* Superfície preta que NÃO inverte no modo escuro.
+       O erro clássico era usar --foreground como fundo de card preto: no
+       dark ele vira branco e o card some. Estes ficam fixos nos dois temas.
+       A borda define a peça quando o fundo da página também é escuro. */
+    --surface-invert: 0 0% 4%;
+    --surface-invert-fg: 0 0% 100%;
+    --surface-invert-border: 0 0% 100%;
+
     /* Painel da Rede — situação do corretor.
        Verde/âmbar/vermelho, deliberadamente fora do laranja da marca. */
     --rede-ativo: 153 61% 23%;
@@ -244,8 +252,8 @@
   /* O card que pede decisão — aqui o laranja ganha peso. Um por tela. */
   .stat-card-signal {
     @apply rounded-xl p-4 sm:p-5 transition-colors duration-200;
-    background: hsl(var(--foreground));
-    border: 1px solid hsl(var(--foreground));
+    background: hsl(var(--surface-invert));
+    border: 1px solid hsl(var(--surface-invert-border) / 0.1);
   }
   .stat-card-signal .metric-label { color: hsl(var(--primary)); }
   .stat-card-signal .metric-value { color: hsl(var(--primary)); }
