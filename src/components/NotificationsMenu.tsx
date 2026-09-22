@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNowStrict, isToday } from "date-fns";
@@ -130,25 +130,61 @@ export function NotificationsMenu() {
 
   const acionaveis = alertas.filter((a) => a.nivel !== "info").length;
 
+  // Alertas acionáveis já vistos ficam no localStorage. O badge conta só o
+  // que ainda não foi aberto: abrir o sino zera o número, mas um alerta NOVO
+  // (id que não estava na lista de vistos) reacende — que é o certo para uma
+  // notificação. Se o storage falhar (aba anônima), degrada para "tudo novo".
+  const CHAVE = "pipa:notif:vistos";
+  const [vistos, setVistos] = useState<Set<string>>(() => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(CHAVE) ?? "[]"));
+    } catch {
+      return new Set();
+    }
+  });
+  const [aberto, setAberto] = useState(false);
+
+  const idsAcionaveis = useMemo(
+    () => alertas.filter((a) => a.nivel !== "info").map((a) => a.id),
+    [alertas],
+  );
+  const naoVistos = idsAcionaveis.filter((id) => !vistos.has(id)).length;
+
+  // Ao abrir, marca os acionáveis atuais como vistos e persiste. Guarda só
+  // os que ainda existem, para o storage não crescer sem limite.
+  useEffect(() => {
+    if (!aberto || idsAcionaveis.length === 0) return;
+    setVistos((prev) => {
+      const proximo = new Set(idsAcionaveis);
+      prev.forEach((id) => idsAcionaveis.includes(id) && proximo.add(id));
+      try {
+        localStorage.setItem(CHAVE, JSON.stringify([...proximo]));
+      } catch {
+        /* aba anônima: sem persistência, tudo bem */
+      }
+      return proximo;
+    });
+  }, [aberto, idsAcionaveis]);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={aberto} onOpenChange={setAberto}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
           aria-label={
-            acionaveis > 0
-              ? `Notificações: ${acionaveis} ${acionaveis === 1 ? "item pede ação" : "itens pedem ação"}`
+            naoVistos > 0
+              ? `Notificações: ${naoVistos} ${naoVistos === 1 ? "novo item" : "novos itens"}`
               : "Notificações"
           }
           className="relative flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <Bell className="h-5 w-5" />
-          {acionaveis > 0 && (
+          {naoVistos > 0 && (
             <span
               className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-mono text-[10px] font-semibold text-primary-foreground"
               style={{ background: "hsl(var(--primary))" }}
             >
-              {acionaveis > 9 ? "9+" : acionaveis}
+              {naoVistos > 9 ? "9+" : naoVistos}
             </span>
           )}
         </button>
