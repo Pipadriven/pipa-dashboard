@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>PIPA Pulso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: palco escuro de uma coluna no celular; no desktop o painel do gerente abre em duas colunas.
+   Marca: laranja sobre preto, malha de nós como motivo, Archivo/Manrope/JetBrains Mono. */
+:root{
+  color-scheme:dark;
+  --bg:#0A0A0A; --panel:#121211; --panel2:#1A1917; --line:#2A2825;
+  --fg:#F4F2EF; --mute:#A39F98; --dim:#6F6B65;
+  --acc:#FC9A00; --acc-ink:#0A0A0A; --acc-soft:rgba(252,154,0,.13);
+  --ok:#5BD69A; --bad:#FF6B57;
+  --f-d:'Archivo',-apple-system,'Segoe UI',sans-serif;
+  --f-b:'Manrope',-apple-system,'Segoe UI',sans-serif;
+  --f-m:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-b);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul{margin:0}
+ul{padding:0;list-style:none}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1040px;margin-inline:auto;padding-inline:16px}
+.mono{font-family:var(--f-m);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.mute{color:var(--mute)}
+.eyebrow{font-family:var(--f-m);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+h2{font-family:var(--f-d);font-weight:700;font-size:clamp(1.6rem,4.6vw,2.4rem);line-height:1.08;letter-spacing:-.025em;text-wrap:balance}
+h3{font-family:var(--f-d);font-weight:600;font-size:1.05rem;letter-spacing:-.01em}
+.num{font-variant-numeric:tabular-nums}
+
+/* barra e etapas */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,10,10,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:16px;height:52px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-d);font-weight:700;letter-spacing:-.02em;color:var(--acc);border:0;background:none;padding:0}
+.brand svg{width:30px;height:18px}
+.steps{display:flex;gap:4px;margin-left:auto;overflow-x:auto}
+.steps button{background:none;border:0;border-radius:4px;padding:6px 10px;white-space:nowrap;color:var(--dim)}
+.steps button[disabled]{cursor:default}
+.steps button.done{color:var(--mute)}
+.steps button.on{color:var(--acc-ink);background:var(--acc)}
+.steps button:not([disabled]):not(.on):hover{color:var(--fg)}
+
+section.scr{padding-block:28px 72px}
+
+/* entrada */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+#mesh{position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 100%);mask-image:linear-gradient(to bottom,#000 55%,transparent 100%)}
+.hero .wrap{position:relative;display:grid;gap:32px;padding-block:56px 64px;grid-template-columns:minmax(0,1fr)}
+.hero h1{font-family:var(--f-d);font-weight:800;font-size:clamp(2.8rem,10vw,5.6rem);line-height:.96;letter-spacing:-.04em;margin-block:14px 18px;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--acc)}
+.hero .lede{max-width:34ch;font-size:1.1rem;color:var(--mute)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:var(--dim)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px}
+.form{display:grid;gap:14px;align-content:start}
+.field{display:grid;gap:6px}
+.field label,.lbl{font-family:var(--f-m);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.field input{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:11px 12px;width:100%;min-width:0}
+.field input::placeholder{color:var(--dim)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--mute)}
+.chip[aria-pressed="true"]{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+.btn{background:var(--acc);color:var(--acc-ink);border:0;border-radius:4px;padding:13px 20px;font-family:var(--f-d);font-weight:700;letter-spacing:-.01em;display:inline-flex;align-items:center;justify-content:center;gap:10px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:none;color:var(--fg);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--mute)}
+.btn[disabled]{opacity:.45;cursor:default;filter:none}
+.fine{font-size:12px;color:var(--dim)}
+
+/* cabeçalho de ato */
+.ato-h{display:grid;gap:8px;margin-bottom:24px}
+.ato-h p{color:var(--mute);max-width:60ch}
+
+/* ato 1 */
+.a1{display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
+.phone{width:100%;max-width:400px;margin-inline:auto;background:#0E0E0D;border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;height:620px}
+.ph-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+.ph-h .av{width:34px;height:34px;border-radius:50%;background:var(--acc-soft);display:grid;place-items:center}
+.ph-h .av svg{width:20px;height:12px}
+.ph-h b{font-family:var(--f-d);font-weight:600;display:block;line-height:1.2}
+.ph-h small{font-family:var(--f-m);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ok)}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.bub{max-width:88%;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.45;animation:rise .28s ease-out both}
+.bub.in{background:var(--panel2);border-top-left-radius:3px;align-self:flex-start}
+.bub.out{background:var(--acc);color:var(--acc-ink);border-top-right-radius:3px;align-self:flex-end;font-weight:500}
+.bub p+p{margin-top:6px}
+.units{display:grid;gap:4px;margin-block:8px 6px}
+.units li{display:flex;justify-content:space-between;gap:10px;font-family:var(--f-m);font-size:12px;padding:6px 8px;background:var(--bg);border-radius:4px}
+.units li b{color:var(--acc);font-weight:700;white-space:nowrap}
+.cap{display:block;font-family:var(--f-m);font-size:10px;letter-spacing:.06em;color:var(--dim);margin-top:6px}
+.meta{align-self:flex-start;font-family:var(--f-m);font-size:10px;letter-spacing:.08em;color:var(--ok);margin-top:-4px;padding-left:4px}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:12px 14px;background:var(--panel2);border-radius:12px;border-top-left-radius:3px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--mute);animation:dot 1s infinite ease-in-out}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+.comp{padding:10px;border-top:1px solid var(--line);background:var(--panel);display:grid;gap:6px}
+.sug{width:100%;text-align:left;background:var(--bg);border:1px dashed var(--acc);border-radius:10px;padding:11px 12px;color:var(--fg);display:flex;justify-content:space-between;gap:10px;align-items:center}
+.sug span:last-child{font-family:var(--f-m);font-size:10px;letter-spacing:.1em;color:var(--acc);white-space:nowrap}
+.sug:hover{background:var(--acc-soft)}
+.missao{display:grid;gap:18px;align-content:start}
+.mis-card{display:grid;gap:12px}
+.mis-card h3{font-size:1.2rem}
+.todo{display:grid;gap:8px}
+.todo li{display:flex;gap:10px;align-items:center;color:var(--mute)}
+.todo li::before{content:"";width:16px;height:16px;border:1.5px solid var(--dim);border-radius:50%;flex:none}
+.todo li.ok{color:var(--fg)}
+.todo li.ok::before{background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%230A0A0A' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;border-color:var(--acc)}
+.ledger{display:grid;gap:8px}
+.ledger li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:baseline;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:4px;animation:rise .3s ease-out both}
+.ledger .tag{color:var(--acc)}
+.ledger .ok{color:var(--ok)}
+.ledger .empty{display:block;color:var(--dim);font-size:13px;border-style:dashed}
+
+/* ato 2 */
+.hunt{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--acc-soft);border:1px solid rgba(252,154,0,.4);border-radius:6px;margin-bottom:16px}
+.hunt p{max-width:56ch}
+.hunt .cnt{font-family:var(--f-d);font-weight:800;font-size:1.6rem;color:var(--acc);letter-spacing:-.03em}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.kpi .t{font-family:var(--f-m);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+.kpi .v{font-family:var(--f-d);font-weight:700;font-size:1.5rem;letter-spacing:-.03em;margin-top:2px}
+.kpi .d{font-family:var(--f-m);font-size:10px;color:var(--dim);margin-top:2px}
+.kpi.flash{animation:flash 1.4s ease-out}
+.dash{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.col{display:grid;gap:16px;align-content:start;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.panel-h .t{font-family:var(--f-m);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+.panel-h h3{font-size:.98rem}
+.hot{position:relative;width:22px;height:22px;border-radius:50%;border:0;background:var(--acc);flex:none;display:grid;place-items:center;color:var(--acc-ink);font-weight:800;font-size:12px;line-height:1}
+.hot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--acc);animation:ring 1.6s infinite ease-out}
+.hot.found{background:var(--ok)}
+.hot.found::after{display:none}
+.funnel{display:grid;gap:6px}
+.fr{display:grid;grid-template-columns:104px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:12.5px}
+.fr .n{font-family:var(--f-m);font-size:11px;text-align:right}
+.fr .bt{height:20px;background:var(--bg);border-radius:3px;overflow:hidden;position:relative}
+.fr .bt i{position:absolute;inset:0 auto 0 0;background:var(--acc);border-radius:3px;transform-origin:left;animation:grow .9s cubic-bezier(.2,.7,.2,1) both}
+.fr .bt s{position:absolute;right:6px;top:50%;transform:translateY(-50%);text-decoration:none;font-family:var(--f-m);font-size:9.5px;color:var(--dim)}
+.seg{display:flex;height:14px;border-radius:3px;overflow:hidden;gap:2px;margin-bottom:12px}
+.seg i{display:block;height:100%}
+.leg{display:grid;gap:6px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.leg li{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mute)}
+.leg li b{color:var(--fg);font-family:var(--f-m);font-weight:500}
+.leg li::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c);flex:none}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{font-family:var(--f-m);font-weight:500;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:left;padding:0 6px 8px 0}
+table.t td{padding:7px 6px 7px 0;border-top:1px solid var(--line);white-space:nowrap}
+table.t td:first-child{white-space:normal}
+.scroll-x{overflow-x:auto}
+.pill{font-family:var(--f-m);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;display:inline-block}
+.p-ok{background:rgba(91,214,154,.15);color:var(--ok)}
+.p-wa{background:var(--acc-soft);color:var(--acc)}
+.p-bd{background:rgba(255,107,87,.15);color:var(--bad)}
+.p-nu{background:var(--panel2);color:var(--mute)}
+.feed{display:grid;gap:0}
+.feed li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.feed li:first-child{border-top:0}
+.feed .tg{font-family:var(--f-m);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);padding-top:3px}
+.feed .tm{display:block;font-family:var(--f-m);font-size:10px;color:var(--dim);margin-top:1px}
+.feed li.you{background:var(--acc-soft);margin-inline:-8px;padding-inline:8px;border-radius:4px;border-top-color:transparent}
+.feed li.new{animation:rise .35s ease-out both}
+.live{display:inline-flex;align-items:center;gap:6px;color:var(--ok)}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);animation:blink 1.4s infinite}
+.wa-note{border-left:3px solid var(--ok);background:var(--bg);border-radius:0 6px 6px 0;padding:12px 14px;display:grid;gap:10px}
+.wa-note .who{font-family:var(--f-m);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ok)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.res li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px;align-items:center}
+.res li:first-child{border-top:0}
+.res .when{font-family:var(--f-m);font-size:11px;color:var(--bad)}
+.res .when.n{color:var(--mute)}
+.go{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:20px}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px)}
+.sheet-c{width:100%;max-width:560px;max-height:92%;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));display:grid;gap:16px;animation:up .28s ease-out both}
+.sheet-c .x{justify-self:end;background:none;border:1px solid var(--line);border-radius:4px;padding:4px 10px;color:var(--mute)}
+.sheet-c h3{font-size:1.45rem;letter-spacing:-.025em;line-height:1.12}
+.blk{display:grid;gap:6px}
+.blk p{color:var(--fg)}
+.blk .prem{font-family:var(--f-m);font-size:10.5px;letter-spacing:.04em;color:var(--dim)}
+.big{font-family:var(--f-d);font-weight:800;font-size:2.2rem;letter-spacing:-.04em;color:var(--acc);line-height:1}
+.result{background:var(--bg);border:1px solid var(--ok);border-radius:6px;padding:14px;display:grid;gap:8px}
+.result b{color:var(--ok)}
+.prog{display:grid;gap:4px;font-family:var(--f-m);font-size:12px}
+.prog .b{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.prog .b i{display:block;height:100%;background:var(--acc);width:0;transition:width .25s linear}
+
+/* ato 3 */
+.a3{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.a3 .sess{order:1}.a3 .calc{order:2}
+.a3[data-papel="diretor"] .calc{order:1}.a3[data-papel="diretor"] .sess{order:2}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sess .big{font-size:1.9rem}
+.calc-in{display:grid;gap:16px}
+.sub{display:grid;gap:12px;padding-top:16px;margin-top:16px;border-top:1px solid var(--line)}
+.sub.first{border-top:0;padding-top:0;margin-top:0}
+.sub-t{font-family:var(--f-m);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.inv{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:14px;margin-top:16px}
+.inv .v{font-family:var(--f-d);font-weight:700;font-size:1.5rem;letter-spacing:-.03em}
+.calc-in label{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
+.calc-in label b{font-family:var(--f-m);color:var(--acc);font-weight:500;letter-spacing:0}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.hrs li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.hrs li:first-child{border-top:0}
+.hrs small{display:block;color:var(--dim);font-family:var(--f-m);font-size:10px}
+.hrs b{font-family:var(--f-m);font-weight:500;align-self:center}
+.eq{margin-top:16px;padding:18px;border-radius:6px;background:var(--acc-soft);border:1px solid rgba(252,154,0,.4);display:grid;gap:6px}
+.cta{display:grid;gap:12px;justify-items:start}
+
+/* sala */
+.qr{width:168px;height:168px;background:#fff;border-radius:6px;padding:10px;display:grid;place-items:center;color:#0A0A0A;font-family:var(--f-m);font-size:10px;text-align:center}
+.qr svg,.qr img{width:100%;height:100%;display:block}
+.sala{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.who li{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.who li:first-child{border-top:0}
+.who small{display:block;color:var(--dim);font-family:var(--f-m);font-size:10px;letter-spacing:.06em}
+.dots{display:flex;gap:4px}
+.dots i{flex:1;height:6px;border-radius:3px;background:var(--panel2)}
+.dots i.on{background:var(--acc)}
+.heat li{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:10px;padding:8px 0;font-size:13px;align-items:center}
+.heat .b{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:4px}
+.heat .b i{display:block;height:100%;background:var(--acc);transition:width .5s}
+
+footer.f{border-top:1px solid var(--line);padding-block:20px}
+footer.f .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;color:var(--dim)}
+footer.f button{background:none;border:0;color:var(--mute);text-decoration:underline;padding:0}
+
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes dot{0%,80%,100%{opacity:.3}40%{opacity:1}}
+@keyframes ring{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.7);opacity:0}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+@keyframes flash{0%{background:var(--acc-soft);border-color:var(--acc)}100%{background:var(--panel);border-color:var(--line)}}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+@media (min-width:760px){
+  .hero .wrap{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:56px}
+  .a1{grid-template-columns:400px minmax(0,1fr);gap:40px;align-items:start}
+  .phone{margin-inline:0}
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .sheet{align-items:center;padding:24px}
+  .sheet-c{border-radius:14px;max-height:88%}
+  .a3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+  .a3 .cta-w{grid-column:1/-1;order:3}
+  .sala{grid-template-columns:220px minmax(0,1fr) minmax(0,.8fr);align-items:start}
+}
+@media (min-width:980px){
+  .dash{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+}
+</style>
+
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <button class="brand" id="home" aria-label="PIPADriven, voltar ao início">
+      <svg viewBox="200 100 570 340" aria-hidden="true"><g stroke="#FC9A00" stroke-width="9" fill="none"><path d="M230 175L729 129M230 175L525 202M525 202L729 129M230 175L392 411M525 202L392 411M729 129L392 411"/></g><g fill="#FC9A00"><circle cx="230" cy="175" r="20"/><circle cx="525" cy="202" r="20"/><circle cx="729" cy="129" r="20"/><circle cx="392" cy="411" r="20"/></g></svg>
+      <span>PIPADriven</span>
+    </button>
+    <nav class="steps mono" id="steps" aria-label="Etapas">
+      <button data-go="entrada">Início</button>
+      <button data-go="corretor">1 Corretor</button>
+      <button data-go="gerente">2 Gerente</button>
+      <button data-go="valor">3 Valor</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ENTRADA -->
+<section class="scr hero" id="s-entrada" style="padding:0">
+  <canvas id="mesh" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Experiência ao vivo</p>
+      <h1>Sinta o <em>pulso</em> da sua rede.</h1>
+      <p class="lede">Dez minutos. Você vira o corretor, depois o gerente, e vê o que o seu comercial hoje não consegue contar.</p>
+      <ul class="facts mono"><li>300 corretores</li><li>4 empreendimentos</li><li>Dados de demonstração</li></ul>
+    </div>
+    <form class="card form" id="form" autocomplete="off">
+      <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" placeholder="Ex.: Renata Souza" maxlength="40"></div>
+      <div class="field"><label for="f-inc">Incorporadora</label><input id="f-inc" placeholder="Ex.: Horizonte Incorporações" maxlength="50"></div>
+      <div class="field"><label for="f-emp">Empreendimento</label><input id="f-emp" value="Residencial Aurora" maxlength="40"></div>
+      <div class="field"><span class="lbl">Você é</span>
+        <div class="chips" id="papel">
+          <button type="button" class="chip" data-p="diretor" aria-pressed="true">Diretor</button>
+          <button type="button" class="chip" data-p="gerente" aria-pressed="false">Gerente comercial</button>
+        </div>
+      </div>
+      <button class="btn" type="submit">Entrar na rede <span aria-hidden="true">→</span></button>
+      <p class="fine">Usamos seu nome só para personalizar a sessão.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ATO 1 -->
+<section class="scr" id="s-corretor" hidden>
+ <div class="wrap">
+  <div class="ato-h"><p class="eyebrow">Ato 1 · Corretor</p><h2>Você está no plantão. O cliente está na sua frente.</h2><p>Responda como responderia no WhatsApp. Cada passo vem do banco da incorporadora e fica registrado sozinho.</p></div>
+  <div class="a1">
+    <div class="phone" aria-label="Conversa de WhatsApp com a PIPA">
+      <div class="ph-h"><div class="av"><svg viewBox="200 100 570 340" aria-hidden="true"><g stroke="#FC9A00" stroke-width="12" fill="none"><path d="M230 175L729 129M230 175L525 202M525 202L729 129M230 175L392 411M525 202L392 411M729 129L392 411"/></g><g fill="#FC9A00"><circle cx="230" cy="175" r="26"/><circle cx="525" cy="202" r="26"/><circle cx="729" cy="129" r="26"/><circle cx="392" cy="411" r="26"/></g></svg></div><div><b>PIPA · <span class="emp-n">Residencial Aurora</span></b><small>online</small></div></div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="comp" id="comp"></div>
+    </div>
+    <div class="missao">
+      <div class="card mis-card">
+        <span class="eyebrow">Missão</span>
+        <h3>Carlos Mendes quer 2 quartos até R$ 900 mil.</h3>
+        <ul class="todo" id="todo"><li>Consultar o que está disponível</li><li>Simular a condição de pagamento</li><li>Reservar a unidade</li></ul>
+        <div id="a1-next"></div>
+      </div>
+      <div>
+        <div class="panel-h"><span class="t">O que a PIPA gravou</span><span class="mono mute" id="lcount">0 registros</span></div>
+        <ul class="ledger" id="ledger"><li class="empty">Nada ainda. Cada resposta vira um registro que o gerente enxerga sem ninguém preencher.</li></ul>
+      </div>
+      <button class="btn ghost" id="skip1" style="justify-self:start">Pular para o painel do gerente</button>
+    </div>
+  </div>
+ </div>
+</section>
+
+<!-- ATO 2 -->
+<section class="scr" id="s-gerente" hidden>
+ <div class="wrap">
+  <div class="ato-h"><p class="eyebrow">Ato 2 · Gerente</p><h2>Agora você comanda a rede.</h2><p>O que você acabou de fazer já está no painel. Leia a rede e ache o que ninguém te contou.</p></div>
+  <div class="hunt"><p id="hunt-t"><b>Há 3 sinais escondidos nesta rede.</b> Toque nos pontos laranja para abrir cada um.</p><span class="cnt num" id="hunt-c">0/3</span></div>
+  <div class="kpis">
+    <div class="kpi" id="k-res"><div class="t">Reservas ativas</div><div class="v num">11</div><div class="d">todas as torres</div></div>
+    <div class="kpi" id="k-lead"><div class="t">Leads hoje</div><div class="v num">34</div><div class="d">12 sem retorno</div></div>
+    <div class="kpi"><div class="t">Tempo de resposta</div><div class="v num">4 s</div><div class="d">média da rede hoje</div></div>
+    <div class="kpi"><div class="t">Corretores ativos</div><div class="v num">187<span class="mute" style="font-size:.9rem"> / 300</span></div><div class="d">credenciados</div></div>
+  </div>
+  <div class="dash">
+    <div class="col">
+      <div class="panel">
+        <div class="panel-h"><div><div class="t">Funil · 30 dias</div><h3><span class="emp-n">Residencial Aurora</span></h3></div><button class="hot" data-k="visitas" aria-label="Sinal escondido no funil">!</button></div>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><div><div class="t">Rede de corretores</div><h3>Situação dos 300 credenciados</h3></div><button class="hot" data-k="rede" aria-label="Sinal escondido na rede">!</button></div>
+        <div class="seg" id="seg"></div>
+        <ul class="leg" id="leg"></ul>
+        <div class="scroll-x" style="margin-top:14px"><table class="t"><thead><tr><th>Corretor</th><th>Situação</th><th>Última ação</th><th style="text-align:right">Reservas</th></tr></thead><tbody id="rede-t"></tbody></table></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="panel">
+        <div class="panel-h"><div><div class="t live">Ao vivo</div><h3>O que está acontecendo</h3></div></div>
+        <ul class="feed" id="feed"></ul>
+      </div>
+      <div class="panel" id="decisao">
+        <div class="panel-h"><div><div class="t">Chegou no seu WhatsApp</div><h3>Decisão pendente</h3></div></div>
+        <div class="wa-note"><span class="who">PIPA · pedido de exceção</span><p>Marina Alves pede <b>3% de desconto</b> na unidade 1507. O cliente fecha hoje. Aprova?</p><div class="row"><button class="btn" data-d="ok">Aprovar</button><button class="btn ghost" data-d="no">Recusar</button></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><div><div class="t">Reservas</div><h3>Quem vence primeiro</h3></div><button class="hot" data-k="reservas" aria-label="Sinal escondido nas reservas">!</button></div>
+        <ul class="res" id="res"></ul>
+      </div>
+    </div>
+  </div>
+  <div class="go"><p class="mute" id="go-t">Leia pelo menos um sinal para continuar.</p><button class="btn" id="to3" disabled>Ver o que isso vale <span aria-hidden="true">→</span></button></div>
+ </div>
+</section>
+
+<!-- ATO 3 -->
+<section class="scr" id="s-valor" hidden>
+ <div class="wrap">
+  <div class="ato-h"><p class="eyebrow">Ato 3 · Valor</p><h2 id="v-h">O que isso vale na sua rede.</h2><p id="v-p">Seus números são premissas visíveis. Mexa nelas até ficarem do tamanho da sua operação.</p></div>
+  <div class="a3" id="a3">
+    <div class="panel sess">
+      <div class="panel-h"><div><div class="t">Sua sessão</div><h3>O que ficou gravado em poucos minutos</h3></div></div>
+      <div class="tiles" id="tiles"></div>
+      <p class="mute" style="margin-top:14px">Ninguém preencheu planilha. Cada consulta, simulação, reserva e decisão virou dado que o gerente lê na hora.</p>
+    </div>
+    <div class="panel calc">
+      <div class="panel-h"><div><div class="t">Quanto se paga</div><h3>Ajuste para a sua rede</h3></div></div>
+      <div class="sub first"><span class="sub-t">Dados da sua incorporadora</span>
+        <div class="calc-in">
+          <div><label for="r-n"><span class="lbl">Corretores credenciados</span><b id="o-n">300</b></label><input type="range" id="r-n" min="50" max="500" step="10" value="300"></div>
+          <div><label for="r-t"><span class="lbl">Ticket médio da unidade</span><b id="o-t">R$ 800 mil</b></label><input type="range" id="r-t" min="300000" max="2000000" step="50000" value="800000"></div>
+          <div><label for="r-m"><span class="lbl">Margem por venda</span><b id="o-m">10%</b></label><input type="range" id="r-m" min="5" max="20" step="1" value="10"><p class="fine" style="margin-top:6px">Premissa sua. Troque pelo número real da incorporadora.</p></div>
+        </div>
+      </div>
+      <div class="sub"><span class="sub-t">Tempo que volta para o time</span><ul class="hrs" id="hrs"></ul></div>
+      <div class="sub inv" id="inv"></div>
+      <div class="eq" id="eq"></div>
+    </div>
+    <div class="panel cta-w"><div class="cta" id="cta">
+      <span class="eyebrow">Próximo passo</span>
+      <h3 style="font-size:1.4rem">Rode isso com a tabela e os dados da sua incorporadora.</h3>
+      <p class="mute" style="max-width:60ch">O que você viu usa dados de demonstração. Na sua rede, os números são os seus.</p>
+      <button class="btn" id="cta-b">Quero o Pulso na minha rede <span aria-hidden="true">→</span></button>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+<!-- SALA -->
+<section class="scr" id="s-sala" hidden>
+ <div class="wrap">
+  <div class="ato-h"><p class="eyebrow">Modo apresentador</p><h2>Sala ao vivo.</h2><p>Projete o código. Cada pessoa da sala entra no seu papel e você acompanha o avanço de todo mundo daqui. Nesta tela os participantes são simulados.</p></div>
+  <div class="sala">
+    <div class="panel"><div class="panel-h"><div class="t">Entre pelo celular</div></div><div class="qr" id="qr">código aparece aqui</div><p class="fine" style="margin-top:10px">Aponte a câmera. Leva menos de um minuto para começar.</p></div>
+    <div class="panel"><div class="panel-h"><div><div class="t live">Na sala</div><h3 id="sala-n">0 participantes</h3></div></div><ul class="who" id="who"></ul></div>
+    <div class="panel"><div class="panel-h"><div><div class="t">Termômetro</div><h3>O que mais chamou atenção</h3></div></div><ul class="heat" id="heat"></ul></div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer class="f"><div class="wrap mono"><span>Protótipo · respostas e números de demonstração</span><button id="open-sala">Modo apresentador</button></div></footer>
+
+<div class="sheet" id="sheet" hidden><div class="sheet-c" role="dialog" aria-modal="true" aria-labelledby="sh-t" id="sheet-c"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var brl=function(n){return 'R$ '+Math.round(n).toLocaleString('pt-BR')};
+var dec=function(n){return (+n.toFixed(2)).toString().replace('.',',')};
+var dec1=function(n){return (+n.toFixed(1)).toString().replace('.',',')};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+
+/* ---------- estado ---------- */
+var S={nome:'',inc:'',emp:'Residencial Aurora',papel:'diretor',max:0,cur:'entrada',
+  chat:0,reservou:false,tempos:[],achados:{},acoes:[],decidiu:null,
+  kpi:{res:11,lead:34},feed:[],timers:[]};
+var ORDER=['entrada','corretor','gerente','valor'];
+var UN=[{id:'1204',t:'A',m2:68,p:872400},{id:'907',t:'A',m2:66,p:861000},{id:'1506',t:'B',m2:70,p:889900}];
+var U=UN[0];
+var ATO=Math.round(U.p*.05), MENSAL=Math.round((U.p*.20-ATO)/36), ENTREGA=Math.round(U.p*.80);
+function nome(){return S.nome||'Você'}
+
+/* ---------- navegação ---------- */
+function clearTimers(){S.timers.forEach(function(t){clearInterval(t);clearTimeout(t)});S.timers=[]}
+function go(id){
+  clearTimers();
+  $$('main > section').forEach(function(s){s.hidden=(s.id!=='s-'+id)});
+  S.cur=id;
+  var i=ORDER.indexOf(id);
+  if(i>S.max)S.max=i;
+  $$('#steps button').forEach(function(b){
+    var k=ORDER.indexOf(b.dataset.go);
+    b.disabled=k>S.max; b.classList.toggle('on',b.dataset.go===id); b.classList.toggle('done',k<i&&k<=S.max);
+  });
+  window.scrollTo(0,0);
+  if(id==='entrada')meshStart(); else meshStop();
+  if(id==='corretor')initChat();
+  if(id==='gerente')initGerente();
+  if(id==='valor')initValor();
+  if(id==='sala')initSala();
+}
+$('#steps').addEventListener('click',function(e){var b=e.target.closest('button');if(b&&!b.disabled)go(b.dataset.go)});
+$('#home').addEventListener('click',function(){go('entrada')});
+$('#open-sala').addEventListener('click',function(){go('sala')});
+
+/* ---------- entrada ---------- */
+$('#papel').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;
+  $$('#papel .chip').forEach(function(c){c.setAttribute('aria-pressed',c===b?'true':'false')});S.papel=b.dataset.p});
+$('#form').addEventListener('submit',function(e){e.preventDefault();
+  S.nome=$('#f-nome').value.trim();S.inc=$('#f-inc').value.trim();
+  S.emp=$('#f-emp').value.trim()||'Residencial Aurora';
+  $$('.emp-n').forEach(function(n){n.textContent=S.emp});
+  resetSessao();go('corretor')});
+function resetSessao(){S.chat=0;S.reservou=false;S.tempos=[];S.achados={};S.acoes=[];S.decidiu=null;S.kpi={res:11,lead:34};S.feed=[];S.chatInit=false}
+
+/* malha de nós: o pulso corre pela rede */
+var mesh={raf:0,on:false,nodes:[],edges:[],w:0,h:0,ox:0,oy:0,ts:0};
+function rnd(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function meshBuild(){
+  var c=$('#mesh'),dpr=Math.min(window.devicePixelRatio||1,2);
+  mesh.w=c.clientWidth;mesh.h=c.clientHeight;c.width=mesh.w*dpr;c.height=mesh.h*dpr;
+  mesh.ctx=c.getContext('2d');mesh.ctx.setTransform(dpr,0,0,dpr,0,0);
+  var r=rnd(7),n=Math.max(40,Math.min(120,Math.round(mesh.w*mesh.h/9000)));
+  mesh.nodes=[];for(var i=0;i<n;i++)mesh.nodes.push({x:r()*mesh.w*1.1-mesh.w*.05,y:r()*mesh.h*1.1-mesh.h*.05});
+  mesh.edges=[];
+  mesh.nodes.forEach(function(a,i){var near=[];mesh.nodes.forEach(function(b,j){if(i<j){var d=Math.hypot(a.x-b.x,a.y-b.y);if(d<130)near.push([d,j])}});
+    near.sort(function(p,q){return p[0]-q[0]}).slice(0,3).forEach(function(p){mesh.edges.push([i,p[1]])})});
+  mesh.ox=mesh.w*.8;mesh.oy=mesh.h*.3;mesh.ts=performance.now();
+}
+function meshDraw(now,still){
+  var ctx=mesh.ctx,w=mesh.w,h=mesh.h;ctx.clearRect(0,0,w,h);
+  var cyc=4200,tt=(now-mesh.ts)%cyc,R=still?220:tt/cyc*Math.max(w,h)*1.1,th=70;
+  function lit(x,y){var d=Math.abs(Math.hypot(x-mesh.ox,y-mesh.oy)-R);return Math.max(0,1-d/th)}
+  ctx.lineWidth=1;
+  mesh.edges.forEach(function(e){var a=mesh.nodes[e[0]],b=mesh.nodes[e[1]],l=lit((a.x+b.x)/2,(a.y+b.y)/2);
+    ctx.strokeStyle='rgba(252,154,0,'+(.07+l*.55)+')';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()});
+  mesh.nodes.forEach(function(n){var l=lit(n.x,n.y);ctx.fillStyle='rgba(252,154,0,'+(.2+l*.8)+')';ctx.beginPath();ctx.arc(n.x,n.y,1.6+l*2.6,0,6.283);ctx.fill()});
+}
+function meshStart(){
+  if(mesh.on)return;mesh.on=true;meshBuild();
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(still){meshDraw(performance.now(),true);return}
+  (function loop(t){if(!mesh.on)return;meshDraw(t);mesh.raf=requestAnimationFrame(loop)})(performance.now());
+}
+function meshStop(){mesh.on=false;cancelAnimationFrame(mesh.raf)}
+var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){if(mesh.on){mesh.on=false;cancelAnimationFrame(mesh.raf);meshStart()}},150)});
+
+/* ---------- ato 1: conversa ---------- */
+var PASSOS=[
+ {sug:function(){return 'Tem 2 quartos até 900 mil no '+S.emp+'?'},
+  reply:function(){return '<p>Para <b>'+esc(S.emp)+'</b>, 2 dormitórios até '+brl(900000)+', há <b>3 unidades livres</b> agora:</p><ul class="units">'+
+    UN.map(function(u){return '<li><span>'+u.id+' · Torre '+u.t+' · '+u.m2+' m²</span><b>'+brl(u.p)+'</b></li>'}).join('')+'</ul><span class="cap">Tabela v14 · atualizada hoje, 08:12</span>'},
+  log:['Consulta','3 unidades mostradas · tabela v14']},
+ {sug:function(){return 'Simula a '+U.id+' com 20% de entrada, obra em 36 meses'},
+  reply:function(){return '<p>Unidade <b>'+U.id+'</b> · '+brl(U.p)+'</p><ul class="units"><li><span>Ato (5%)</span><b>'+brl(ATO)+'</b></li><li><span>36 mensais</span><b>'+brl(MENSAL)+'</b></li><li><span>Na entrega (80%)</span><b>'+brl(ENTREGA)+'</b></li></ul><span class="cap">Valores da tabela oficial. Nenhum número é estimado pela IA.</span>'},
+  log:['Simulação',U.id+' · 20% de entrada · 36 meses']},
+ {sug:function(){return 'Reserva a '+U.id+' para o Carlos Mendes'},
+  reply:function(){return '<p><b>Reservada.</b> Unidade '+U.id+' para Carlos Mendes, válida por 48 h.</p><p>O gerente já foi avisado e a unidade saiu da disponibilidade da rede.</p>'},
+  log:['Reserva',U.id+' · Carlos Mendes · expira em 48 h · gerente avisado']}
+];
+function initChat(){
+  $$('.emp-n').forEach(function(n){n.textContent=S.emp});
+  if(S.chatInit){return}
+  S.chatInit=true;
+  $('#msgs').innerHTML='<div class="bub in"><p>Oi, '+esc(nome().split(' ')[0])+'. Sou a PIPA do <b>'+esc(S.emp)+'</b>. Pergunte o que precisar do estoque, da tabela e das condições.</p></div>';
+  $('#ledger').innerHTML='<li class="empty">Nada ainda. Cada resposta vira um registro que o gerente enxerga sem ninguém preencher.</li>';
+  $('#lcount').textContent='0 registros';$('#a1-next').innerHTML='';
+  $$('#todo li').forEach(function(l){l.classList.remove('ok')});
+  renderComp();
+}
+function renderComp(){
+  var c=$('#comp');
+  if(S.chat>=PASSOS.length){c.innerHTML='<p class="mono mute" style="padding:6px 4px">Missão cumprida</p>';return}
+  c.innerHTML='<span class="lbl" style="padding-left:2px">Toque para enviar</span><button class="sug" id="sug"><span>'+esc(PASSOS[S.chat].sug())+'</span><span>ENVIAR</span></button>';
+  $('#sug').addEventListener('click',enviar);
+}
+function msgsEnd(){var m=$('#msgs');m.scrollTop=m.scrollHeight}
+function enviar(){
+  var p=PASSOS[S.chat];$('#comp').innerHTML='';
+  var m=$('#msgs'),o=document.createElement('div');o.className='bub out';o.textContent=p.sug();m.appendChild(o);
+  var ty=document.createElement('div');ty.className='typing';ty.innerHTML='<i></i><i></i><i></i>';m.appendChild(ty);msgsEnd();
+  var tempo=2.8+Math.random()*2.2;
+  S.timers.push(setTimeout(function(){
+    ty.remove();
+    var r=document.createElement('div');r.className='bub in';r.innerHTML=p.reply();m.appendChild(r);
+    var mt=document.createElement('div');mt.className='meta';mt.textContent='respondeu em '+tempo.toFixed(1).replace('.',',')+' s';m.appendChild(mt);
+    S.tempos.push(tempo);
+    var l=$('#ledger');if(l.querySelector('.empty'))l.innerHTML='';
+    var li=document.createElement('li');li.innerHTML='<span class="tag mono">'+p.log[0]+'</span><span>'+esc(p.log[1])+'</span><span class="ok mono">gravado</span>';l.appendChild(li);
+    $('#lcount').textContent=(S.chat+1)+' registro'+(S.chat?'s':'');
+    $$('#todo li')[S.chat].classList.add('ok');
+    S.chat++;
+    if(S.chat===3){S.reservou=true;S.kpi.res=12;$('#skip1').hidden=true;
+      $('#a1-next').innerHTML='<button class="btn" id="to2">Virar o gerente <span aria-hidden="true">→</span></button>';
+      $('#to2').addEventListener('click',function(){go('gerente')})}
+    renderComp();msgsEnd();
+  },1100));
+}
+$('#skip1').addEventListener('click',function(){go('gerente')});
+
+/* ---------- ato 2: painel ---------- */
+var FUN=[['Leads',260],['Atendidos',231],['Visita agendada',118],['Visita realizada',48],['Proposta',21],['Venda',6]];
+var POOL=[['Lead','Lead novo · Portal · Torre A, atribuído a Joana Reis'],['Resposta','Marina Alves respondeu o cliente em 4 s'],['Simulação','Simulação · 1102 · 20% em 36x · Pedro Lima'],['Visita','Visita agendada · sábado 9h · Carlos Nunes'],['Consulta','Consulta de tabela · Torre B · Tiago Moura'],['Lead','Lead novo · Instagram, atribuído a Marina Alves']];
+function rel(at){var s=(Date.now()-at)/1000;return s<30?'agora':s<3600?'há '+Math.round(s/60)+' min':'há '+Math.round(s/3600)+' h'}
+function renderFeed(){
+  $('#feed').innerHTML=S.feed.slice(0,8).map(function(f){return '<li class="'+(f.you?'you ':'')+(f.fresh?'new':'')+'"><span class="tg">'+f.tag+'</span><span>'+esc(f.txt)+'<span class="tm">'+rel(f.at)+'</span></span></li>'}).join('');
+  S.feed.forEach(function(f){f.fresh=false});
+}
+function pushFeed(tag,txt,you,ago){S.feed.unshift({tag:tag,txt:txt,you:!!you,at:Date.now()-(ago||0)*1000,fresh:true})}
+function renderKpi(flashId){
+  $('#k-res .v').textContent=S.kpi.res;$('#k-lead .v').textContent=S.kpi.lead;
+  if(flashId){var k=$(flashId);k.classList.remove('flash');void k.offsetWidth;k.classList.add('flash')}
+}
+function initGerente(){
+  $$('.emp-n').forEach(function(n){n.textContent=S.emp});
+  if(!S.feed.length){
+    pushFeed('Tabela','Tabela v14 publicada · 187 corretores avisados',false,18*60);
+    pushFeed('Visita','Visita confirmada · Pedro Lima · amanhã 10h',false,11*60);
+    pushFeed('Resposta','Marina Alves respondeu o cliente em 3 s',false,6*60);
+    pushFeed('Lead','Lead novo · Instagram, atribuído a Joana Reis',false,2*60);
+    if(S.reservou){
+      pushFeed('Consulta',nome()+' consultou 3 unidades do '+S.emp,true,50);
+      pushFeed('Simulação',nome()+' simulou a '+U.id+' · 20% em 36x',true,30);
+      pushFeed('Reserva','Reserva da '+U.id+' · Carlos Mendes · por '+nome(),true,4);
+    }
+    S.feed.forEach(function(f){f.fresh=false});
+  }
+  renderFeed();renderKpi(S.reservou?'#k-res':null);
+  $('#funnel').innerHTML=FUN.map(function(f,i){var pc=i?Math.round((1-f[1]/FUN[i-1][1])*100):0;
+    return '<div class="fr"><span>'+f[0]+'</span><div class="bt"><i style="width:'+(f[1]/260*100)+'%;animation-delay:'+(i*80)+'ms"></i>'+(i?'<s>−'+pc+'%</s>':'')+'</div><span class="n num">'+f[1]+'</span></div>'}).join('');
+  var seg=[['Ativos',187,'var(--acc)'],['Esfriando',52,'#8A6A2A'],['Parados',20,'#5A4A30'],['Nunca produziram',41,'var(--dim)']];
+  $('#seg').innerHTML=seg.map(function(s){return '<i style="flex:'+s[1]+';background:'+s[2]+'"></i>'}).join('');
+  $('#leg').innerHTML=seg.map(function(s){return '<li style="--c:'+s[2]+'">'+s[0]+' <b class="num">'+s[1]+'</b></li>'}).join('');
+  var rows=[['Joana Reis','Reis Imóveis','p-ok','Ativo','2 min',2],['Marina Alves','Alves Negócios','p-ok','Ativo','6 min',1],['Pedro Lima','Lima & Cia','p-wa','Esfriando','6 d',0],['Carlos Nunes','Prime Imóveis','p-bd','Parado','11 d',0],['Tiago Moura','Moura Imob.','p-nu','Nunca produziu','nunca',0]];
+  if(S.reservou)rows.unshift([nome(),S.inc||'Sua imobiliária','p-ok','Ativo','agora',1]);
+  $('#rede-t').innerHTML=rows.map(function(r){return '<tr><td><b>'+esc(r[0])+'</b><br><span class="mono" style="font-size:8.5px;color:var(--dim)">'+esc(r[1])+'</span></td><td><span class="pill '+r[2]+'">'+r[3]+'</span></td><td class="mono mute" style="font-size:10px">'+r[4]+'</td><td class="num" style="text-align:right">'+r[5]+'</td></tr>'}).join('');
+  var res=[['1507 · Marina Alves','5 h 40 min',1],['803 · Pedro Lima','5 h 55 min',1],['1102 · Carlos Nunes','6 h 10 min',1],['1204 · Carlos Mendes (você)','48 h',0],['0905 · Joana Reis','1 d 20 h',0]];
+  if(!S.reservou)res.splice(3,1);
+  $('#res').innerHTML=res.map(function(r){return '<li><span>'+esc(r[0])+'</span><span class="when '+(r[2]?'':'n')+' num">vence em '+r[1]+'</span></li>'}).join('');
+  $('#decisao').hidden=false;if(S.decidiu)renderDecisao();
+  $$('.hot').forEach(markHot);updateHunt();
+  var n=0;S.timers.push(setInterval(function(){n++;
+    if(n%2===0){var p=POOL[Math.floor(Math.random()*POOL.length)];pushFeed(p[0],p[1],false,0);
+      if(p[0]==='Lead'){S.kpi.lead++;renderKpi('#k-lead')}}
+    renderFeed()},3500));
+}
+function markHot(b){var f=!!S.achados[b.dataset.k];b.classList.toggle('found',f);b.textContent=f?'✓':'!'}
+function updateHunt(){
+  var n=Object.keys(S.achados).length;$('#hunt-c').textContent=n+'/3';
+  $('#hunt-t').innerHTML=n===3?'<b>Rede inteira lida.</b> Três coisas que hoje ficam invisíveis. Agora veja o que isso vale.':'<b>Há '+(3-n)+(3-n>1?' sinais escondidos':' sinal escondido')+' nesta rede.</b> Toque nos pontos laranja para abrir cada um.';
+  var b=$('#to3');b.disabled=n<1;$('#go-t').textContent=n<1?'Leia pelo menos um sinal para continuar.':(n<3?'Você pode continuar agora ou achar os outros.':'Pronto para fechar.')
+}
+$('#to3').addEventListener('click',function(){go('valor')});
+$$('.hot').forEach(function(b){b.addEventListener('click',function(){abrirAchado(b.dataset.k)})});
+function renderDecisao(){
+  var ok=S.decidiu==='ok';
+  $('#decisao .wa-note').innerHTML='<span class="who">PIPA · pedido de exceção</span><p>'+(ok?'<b style="color:var(--ok)">Aprovado.</b> Marina Alves foi avisada no WhatsApp e a condição está valendo na 1507.':'<b style="color:var(--bad)">Recusado.</b> Marina Alves foi avisada e a tabela segue como está.')+'</p><span class="fine">Registrado com data, hora e quem decidiu.</span>';
+}
+$('#decisao').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b||S.decidiu)return;
+  S.decidiu=b.dataset.d;S.acoes.push('decisao');
+  pushFeed('Exceção',S.decidiu==='ok'?nome()+' aprovou 3% de desconto · 1507 · Marina Alves':nome()+' recusou o desconto da 1507 · Marina Alves',true,0);
+  renderDecisao();renderFeed()});
+
+/* achados */
+var ACH={
+ visitas:{n:1,t:'Visitas agendadas que não acontecem',
+  dado:'<p>118 visitas agendadas, 48 realizadas. São <b>70 faltas</b>, 59% do que foi marcado.</p>',
+  custo:'<div class="big num">≈ R$ 1,7 mi</div><p>em VGV, se 1 a cada 4 faltas virasse visita.</p><p class="prem">Premissa: 17 visitas recuperadas × 12,5% de venda por visita (6 vendas em 48, do próprio funil) × ticket de R$ 800 mil.</p>',
+  acao:'Cobrar os corretores com visita sem retorno',
+  run:function(box){
+    prog(box,'Cobranças enviadas','23 corretores',23,function(){return '<b>Enviado.</b> Cada corretor recebeu os próprios números: visitas marcadas, realizadas e as que ficaram sem retorno. Você acompanha quem respondeu.'})}},
+ rede:{n:2,t:'41 corretores credenciados nunca produziram',
+  dado:'<p><b>41 de 300</b> (14%) estão na rede e nunca fizeram uma consulta, simulação ou reserva.</p>',
+  custo:'<div class="big num">14%</div><p>da rede paga em credenciamento e treino sem gerar nada.</p><p class="prem">Fato do banco: nenhuma atividade registrada de autor corretor desde a aprovação.</p>',
+  acao:'Mandar ativação para os 41',
+  run:function(box){
+    prog(box,'Ativações enviadas','41 corretores',41,function(){return '<b>Enviado.</b> Cada um recebeu um convite no WhatsApp para começar hoje. Quem responde já entra na conversa com a PIPA. <span class="mute">(Simulado: 17 responderam nos primeiros 2 minutos.)</span>'})}},
+ reservas:{n:3,t:'3 reservas vencem em 6 horas e ninguém abriu o aviso',
+  dado:'<p>Unidades <b>1507, 803 e 1102</b> estão reservadas por corretores diferentes. Nenhum dos três respondeu à pergunta de renovação.</p>',
+  custo:'<div class="big num">≈ R$ 2,4 mi</div><p>em VGV voltam ao estoque sem que o cliente tenha sido cobrado.</p><p class="prem">Premissa: 3 unidades × ticket de R$ 800 mil.</p>',
+  acao:'Estender as 3 reservas até amanhã, 18h',
+  run:function(box){
+    box.innerHTML='<div class="result"><p><b>Estendidas.</b> Os 3 corretores são avisados em 10 minutos. Se mudar de ideia, diga <b>desfaz</b> dentro desse prazo e volta como estava.</p></div>';
+    S.acoes.push('acao');pushFeed('Reserva',nome()+' estendeu 3 reservas até amanhã 18h',true,0);renderFeed();
+    $$('#res li').slice(0,3).forEach(function(li){var w=$('.when',li);w.textContent='vence amanhã 18h';w.className='when n'})}}
+};
+function prog(box,tit,sub,total,fim){
+  box.innerHTML='<div class="prog"><span>'+tit+' · '+sub+'</span><div class="b"><i id="pb"></i></div><span id="pc" class="num">0 / '+total+'</span></div>';
+  var i=0,step=Math.max(1,Math.round(total/14));
+  var t=setInterval(function(){i=Math.min(total,i+step);$('#pb').style.width=(i/total*100)+'%';$('#pc').textContent=i+' / '+total;
+    if(i>=total){clearInterval(t);box.innerHTML='<div class="result"><p>'+fim()+'</p></div>';S.acoes.push('acao');pushFeed('Ação',nome()+' · '+tit.toLowerCase()+' · '+sub,true,0);renderFeed()}},110);
+  S.timers.push(t);
+}
+var lastFocus=null;
+function abrirAchado(k){
+  var a=ACH[k];lastFocus=document.activeElement;
+  S.achados[k]=true;markHot($('.hot[data-k="'+k+'"]'));updateHunt();
+  var c=$('#sheet-c');
+  c.innerHTML='<button class="x mono" id="x">Fechar</button><span class="eyebrow">Sinal '+a.n+' de 3</span><h3 id="sh-t">'+a.t+'</h3>'+
+   '<div class="blk"><span class="lbl">O que o dado mostra</span>'+a.dado+'</div>'+
+   '<div class="blk"><span class="lbl">Quanto custa</span>'+a.custo+'</div>'+
+   '<div class="blk"><span class="lbl">O que você faz agora</span><div id="act"><button class="btn" id="do">'+a.acao+'</button></div></div>';
+  $('#sheet').hidden=false;$('#x').focus();
+  $('#x').addEventListener('click',fechar);
+  $('#do').addEventListener('click',function(){$('#do').disabled=true;a.run($('#act'))});
+}
+function fechar(){$('#sheet').hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+$('#sheet').addEventListener('click',function(e){if(e.target.id==='sheet')fechar()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('#sheet').hidden)fechar()});
+
+/* ---------- ato 3 ---------- */
+var PRECO_POR_CORRETOR=50, MOSTRAR_PRECO=true;
+/* Endereço público que o QR da sala deve apontar (ex.: https://painel.seudominio.com/pulso.html). Vazio = usa o endereço atual. */
+var PUBLIC_URL='https://dashboard.pipadriven.com.br/pulso.html';
+function initValor(){
+  $('#a3').dataset.papel=S.papel;
+  var tm=S.tempos.length?S.tempos.reduce(function(a,b){return a+b},0)/S.tempos.length:null;
+  var ach=Object.keys(S.achados).length;
+  var dec_=S.decidiu?1:0, acoes=S.acoes.filter(function(x){return x==='acao'}).length;
+  $('#tiles').innerHTML=[
+    [S.reservou?'3':'0','ações do corretor registradas'],
+    [tm?tm.toFixed(1).replace('.',',')+' s':'4 s',tm?'resposta média sua':'resposta média da rede'],
+    [ach+'/3','sinais lidos na rede'],
+    [String(acoes+dec_),'ações do gerente executadas']
+  ].map(function(t){return '<div class="kpi"><div class="v big num" style="color:var(--acc)">'+t[0]+'</div><div class="d" style="font-size:11px;margin-top:6px">'+t[1]+'</div></div>'}).join('');
+  calc();
+}
+function calc(){
+  var n=+$('#r-n').value,t=+$('#r-t').value,m=+$('#r-m').value/100;
+  $('#o-n').textContent=n;$('#o-m').textContent=Math.round(m*100)+'%';
+  $('#o-t').textContent=t>=1e6?'R$ '+dec(t/1e6)+' mi':'R$ '+Math.round(t/1000)+' mil';
+  var H=[['Gerente comercial','2 h por dia a R$ 150/h · 22 dias',2*22,150],['Plantão','3 h por dia a R$ 50/h · 22 dias',3*22,50],['Coordenação','4 h por semana a R$ 100/h',4*4.33,100]];
+  var horas=0,val=0;
+  $('#hrs').innerHTML=H.map(function(h){horas+=h[2];val+=h[2]*h[3];return '<li><span>'+h[0]+'<small>'+h[1]+'</small></span><b class="num">'+brl(h[2]*h[3])+'/mês</b></li>'}).join('')+
+   '<li><span><b>Total devolvido</b><small>'+Math.round(horas)+' h por mês</small></span><b class="num" style="color:var(--acc)">'+brl(val)+'/mês</b></li>';
+  var marg=t*m,eq=$('#eq'),inv=$('#inv');
+  inv.hidden=!MOSTRAR_PRECO;
+  if(MOSTRAR_PRECO){
+    var custo=n*PRECO_POR_CORRETOR, liq=Math.max(0,custo*12-val*12), vc=liq/marg, vs=custo*12/marg;
+    inv.innerHTML='<span class="sub-t">Investimento na PIPA</span><div class="v num">'+brl(custo)+' por mês</div><p class="fine" style="margin-top:4px">R$ '+PRECO_POR_CORRETOR+' por corretor credenciado · '+brl(custo*12)+' por ano</p>';
+    eq.innerHTML='<span class="lbl">Para o investimento se pagar, contando o tempo devolvido</span><div class="big num">'+dec1(vc)+' '+(vc<2?'venda':'vendas')+' por ano</div><p class="mute">Sem contar o tempo devolvido: '+dec(vs)+' vendas por ano.</p><p class="fine" style="margin-top:4px">Cada venda deixa '+brl(marg)+' de margem pela sua premissa.</p>';
+  }else{
+    eq.innerHTML='<span class="lbl">Tempo devolvido por ano</span><div class="big num">'+brl(val*12)+'</div><p class="mute">Só em horas de quem hoje faz planilha e cobrança.</p>';
+  }
+}
+$('#r-n').addEventListener('input',calc);$('#r-t').addEventListener('input',calc);$('#r-m').addEventListener('input',calc);
+$('#cta-b').addEventListener('click',function(){
+  $('#cta').innerHTML='<span class="eyebrow">Recebido</span><h3 style="font-size:1.4rem">Obrigado, '+esc(nome().split(' ')[0])+'.</h3><p class="mute" style="max-width:60ch">Vamos montar o Pulso com a tabela e os dados de '+esc(S.inc||'a sua incorporadora')+'. Nesta versão de protótipo nada foi enviado.</p>'});
+
+/* ---------- sala ao vivo ---------- */
+var GENTE=[['Carlos Almeida','Diretor'],['Ana Prado','Gerente comercial'],['Marcos Teles','Gerente comercial'],['Júlia Ferraz','Diretora'],['Rafael Duarte','Diretor']];
+function initSala(){
+  var qr=$('#qr');
+  try{var q=qrcode(0,'M');q.addData(PUBLIC_URL||location.href);q.make();qr.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){qr.textContent='código aparece aqui'}
+  var P=[],heat=[['Visitas que não acontecem',0],['41 corretores parados',0],['Reservas vencendo',0]];
+  function draw(){
+    $('#sala-n').textContent=(P.length+1)+' participantes';
+    var me={n:nome(),r:S.papel==='gerente'?'Gerente comercial':'Diretor',s:Math.min(3,S.max),you:true};
+    $('#who').innerHTML=[me].concat(P).map(function(p){return '<li><span><b>'+esc(p.n)+(p.you?' (você)':'')+'</b><small>'+p.r+' · '+['Entrou','Ato 1 · Corretor','Ato 2 · Gerente','Ato 3 · Valor'][p.s]+'</small></span><div class="dots">'+[1,2,3].map(function(k){return '<i class="'+(p.s>=k?'on':'')+'"></i>'}).join('')+'</div></li>'}).join('');
+    var mx=Math.max(1,heat[0][1],heat[1][1],heat[2][1]);
+    $('#heat').innerHTML=heat.map(function(h){return '<li><span>'+h[0]+'<div class="b"><i style="width:'+(h[1]/mx*100)+'%"></i></div></span><b class="mono num">'+h[1]+'</b></li>'}).join('');
+  }
+  draw();
+  S.timers.push(setInterval(function(){
+    if(P.length<GENTE.length&&Math.random()<.5){P.push({n:GENTE[P.length][0],r:GENTE[P.length][1],s:0})}
+    P.forEach(function(p){if(p.s<3&&Math.random()<.35){p.s++;if(p.s===2)heat[Math.floor(Math.random()*3)][1]++;if(p.s===3)heat[Math.floor(Math.random()*3)][1]++}});
+    draw()},2200));
+}
+
+/* início */
+$('#steps button[data-go="corretor"]').disabled=true;
+go(location.hash==='#sala'?'sala':'entrada');
+})();
+</script>
+
+</body>
+</html>
