@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { StatCard } from "../components/dashboard/StatCard";
+import { AoVivoPanel } from "../components/rede/AoVivoPanel";
+import { DecisoesPendentes } from "../components/rede/DecisoesPendentes";
 import {
   Select,
   SelectContent,
@@ -260,6 +262,12 @@ export default function RedePage() {
           delay={0.35}
           loading={isLoading}
         />
+      </div>
+
+      {/* Decidir e acompanhar: o que pede ação agora e o que a rede está fazendo */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 mb-6">
+        <DecisoesPendentes />
+        <AoVivoPanel />
       </div>
 
       {/* Ações de hoje */}
