@@ -15,8 +15,10 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  QrCode,
 } from "lucide-react";
 import { useIsMobile } from "../hooks/use-mobile";
+import { usePulsoAdmin } from "../hooks/use-pulso";
 
 interface NavItem {
   title: string;
@@ -37,6 +39,10 @@ const mainItems: NavItem[] = [
   { title: "PIPA", url: "/ia", icon: Bot, preview: true },
 ];
 
+// Só aparece para a equipe da PIPA (tabela `pulso_admin`): são os prospects
+// da imersão, não dados de cliente.
+const imersoesItem: NavItem = { title: "Imersões", url: "/imersoes", icon: QrCode };
+
 const supportItems: NavItem[] = [
   { title: "Configurações", url: "/settings", icon: Settings },
   { title: "Ajuda", url: "/help", icon: HelpCircle },
@@ -52,6 +58,8 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { signOut } = useAuth();
+  const { data: ehAdminPipa } = usePulsoAdmin();
+  const itensOperacao = ehAdminPipa ? [...mainItems, imersoesItem] : mainItems;
 
   // Never collapse on mobile drawer
   const isCollapsed = isMobile ? false : collapsed;
@@ -144,7 +152,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               Operação
             </p>
           )}
-          <div className="space-y-0.5">{mainItems.map(renderItem)}</div>
+          <div className="space-y-0.5">{itensOperacao.map(renderItem)}</div>
         </div>
 
         <div>

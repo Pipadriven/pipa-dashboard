@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Index from "./pages/Index.tsx";
 import RedePage from "./pages/RedePage.tsx";
+import ImersoesPage from "./pages/ImersoesPage.tsx";
 // Marketing, Vendas e PIPA ainda não têm dado real: as telas antigas
 // (MarketingPage/VendasPage/IAPage) renderizavam números fabricados.
 // Ficaram no repositório para quando o dado existir; a rota aponta para
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/nova-senha" element={<NovaSenhaPage />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/rede" element={<ProtectedRoute><RedePage /></ProtectedRoute>} />
+            <Route path="/imersoes" element={<ProtectedRoute><ImersoesPage /></ProtectedRoute>} />
             <Route path="/marketing" element={<ProtectedRoute><EmBrevePage /></ProtectedRoute>} />
             <Route path="/vendas" element={<ProtectedRoute><EmBrevePage /></ProtectedRoute>} />
             <Route path="/ia" element={<ProtectedRoute><EmBrevePage /></ProtectedRoute>} />
