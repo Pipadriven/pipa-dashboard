@@ -214,6 +214,8 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .hrs b{font-family:var(--f-m);font-weight:500;align-self:center}
 .eq{margin-top:16px;padding:18px;border-radius:6px;background:var(--acc-soft);border:1px solid rgba(252,154,0,.4);display:grid;gap:6px}
 .cta{display:grid;gap:12px;justify-items:start}
+.cta-form{display:grid;gap:12px;width:100%;max-width:420px}
+.cta-form .fine.erro{color:var(--bad)}
 
 /* sala */
 .qr{width:168px;height:168px;background:#fff;border-radius:6px;padding:10px;display:grid;place-items:center;color:#0A0A0A;font-family:var(--f-m);font-size:10px;text-align:center}
@@ -297,7 +299,7 @@ footer.f button{background:none;border:0;color:var(--mute);text-decoration:under
         </div>
       </div>
       <button class="btn" type="submit">Entrar na rede <span aria-hidden="true">→</span></button>
-      <p class="fine">Usamos seu nome só para personalizar a sessão.</p>
+      <p class="fine">Usamos seus dados para personalizar a experiência e, se você pedir, para a PIPADriven entrar em contato.</p>
     </form>
   </div>
 </section>
@@ -399,7 +401,12 @@ footer.f button{background:none;border:0;color:var(--mute);text-decoration:under
       <span class="eyebrow">Próximo passo</span>
       <h3 style="font-size:1.4rem">Rode isso com a tabela e os dados da sua incorporadora.</h3>
       <p class="mute" style="max-width:60ch">O que você viu usa dados de demonstração. Na sua rede, os números são os seus.</p>
-      <button class="btn" id="cta-b">Quero o Pulso na minha rede <span aria-hidden="true">→</span></button>
+      <form class="cta-form" id="cta-f" novalidate>
+        <div class="field"><label for="c-zap">Seu WhatsApp</label><input id="c-zap" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="22"></div>
+        <div class="field"><label for="c-mail">E-mail (opcional)</label><input id="c-mail" type="email" autocomplete="email" placeholder="voce@incorporadora.com.br" maxlength="120"></div>
+        <button class="btn" type="submit">Quero o Pulso na minha rede <span aria-hidden="true">→</span></button>
+        <p class="fine" id="c-msg">Ao enviar, você autoriza a PIPADriven a falar com você por WhatsApp ou e-mail sobre o Pulso.</p>
+      </form>
     </div></div>
   </div>
  </div>
@@ -438,6 +445,21 @@ var S={nome:'',inc:'',emp:'Residencial Aurora',papel:'diretor',max:0,cur:'entrad
   chat:0,reservou:false,tempos:[],achados:{},acoes:[],decidiu:null,
   kpi:{res:11,lead:34},feed:[],timers:[]};
 var ORDER=['entrada','corretor','gerente','valor'];
+
+/* ---------- captura: guarda o avanço no Supabase da PIPA (só na versão hospedada) ---------- */
+var CAPTURA_URL='https://dobbjbvqgvnhmvoxhtjk.supabase.co', CAPTURA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvYmJqYnZxZ3ZuaG12b3hodGprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTYwOTEsImV4cCI6MjA5MDQ5MjA5MX0.47Owzv70fuE1IGuOE9l7IFp2J3jg0feGyHpDBg9v6Sk';
+var SESSAO=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
+var ORIGEM=(function(){try{var m=/[?&]de=([A-Za-z0-9_-]{1,40})/.exec(location.search);return m?m[1]:''}catch(e){return ''}})();
+var debouncer=0;
+function registrar(evento,dados){
+  if(!CAPTURA_URL)return;
+  dados=dados||{};dados.evento=evento;
+  try{fetch(CAPTURA_URL+'/rest/v1/rpc/fn_pulso_registrar',{method:'POST',keepalive:true,
+    headers:{'Content-Type':'application/json',apikey:CAPTURA_KEY,Authorization:'Bearer '+CAPTURA_KEY},
+    body:JSON.stringify({p_sessao:SESSAO,p_dados:dados})}).catch(function(){})}catch(e){}
+}
+function registrarDepois(evento,dados){clearTimeout(debouncer);debouncer=setTimeout(function(){registrar(evento,dados)},1200)}
+function acao(tipo){S.acoes.push(tipo);registrar('acao.'+tipo,tipo==='decisao'?{acoes:S.acoes.length,decidiu:true}:{acoes:S.acoes.length})}
 var UN=[{id:'1204',t:'A',m2:68,p:872400},{id:'907',t:'A',m2:66,p:861000},{id:'1506',t:'B',m2:70,p:889900}];
 var U=UN[0];
 var ATO=Math.round(U.p*.05), MENSAL=Math.round((U.p*.20-ATO)/36), ENTREGA=Math.round(U.p*.80);
@@ -456,6 +478,7 @@ function go(id){
     b.disabled=k>S.max; b.classList.toggle('on',b.dataset.go===id); b.classList.toggle('done',k<i&&k<=S.max);
   });
   window.scrollTo(0,0);
+  if(id==='corretor'||id==='gerente'||id==='valor')registrar('tela.'+id,{ato_max:i});
   if(id==='entrada')meshStart(); else meshStop();
   if(id==='corretor')initChat();
   if(id==='gerente')initGerente();
@@ -473,7 +496,9 @@ $('#form').addEventListener('submit',function(e){e.preventDefault();
   S.nome=$('#f-nome').value.trim();S.inc=$('#f-inc').value.trim();
   S.emp=$('#f-emp').value.trim()||'Residencial Aurora';
   $$('.emp-n').forEach(function(n){n.textContent=S.emp});
-  resetSessao();go('corretor')});
+  resetSessao();
+  registrar('entrada',{nome:S.nome,incorporadora:S.inc,empreendimento:S.emp,papel:S.papel,origem:ORIGEM,ato_max:0});
+  go('corretor')});
 function resetSessao(){S.chat=0;S.reservou=false;S.tempos=[];S.achados={};S.acoes=[];S.decidiu=null;S.kpi={res:11,lead:34};S.feed=[];S.chatInit=false}
 
 /* malha de nós: o pulso corre pela rede */
@@ -553,7 +578,7 @@ function enviar(){
     $('#lcount').textContent=(S.chat+1)+' registro'+(S.chat?'s':'');
     $$('#todo li')[S.chat].classList.add('ok');
     S.chat++;
-    if(S.chat===3){S.reservou=true;S.kpi.res=12;$('#skip1').hidden=true;
+    if(S.chat===3){S.reservou=true;S.kpi.res=12;$('#skip1').hidden=true;registrar('corretor.reservou',{resp_media_s:+(S.tempos.reduce(function(a,b){return a+b},0)/S.tempos.length).toFixed(1)});
       $('#a1-next').innerHTML='<button class="btn" id="to2">Virar o gerente <span aria-hidden="true">→</span></button>';
       $('#to2').addEventListener('click',function(){go('gerente')})}
     renderComp();msgsEnd();
@@ -620,7 +645,7 @@ function renderDecisao(){
   $('#decisao .wa-note').innerHTML='<span class="who">PIPA · pedido de exceção</span><p>'+(ok?'<b style="color:var(--ok)">Aprovado.</b> Marina Alves foi avisada no WhatsApp e a condição está valendo na 1507.':'<b style="color:var(--bad)">Recusado.</b> Marina Alves foi avisada e a tabela segue como está.')+'</p><span class="fine">Registrado com data, hora e quem decidiu.</span>';
 }
 $('#decisao').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b||S.decidiu)return;
-  S.decidiu=b.dataset.d;S.acoes.push('decisao');
+  S.decidiu=b.dataset.d;acao('decisao');
   pushFeed('Exceção',S.decidiu==='ok'?nome()+' aprovou 3% de desconto · 1507 · Marina Alves':nome()+' recusou o desconto da 1507 · Marina Alves',true,0);
   renderDecisao();renderFeed()});
 
@@ -644,20 +669,20 @@ var ACH={
   acao:'Estender as 3 reservas até amanhã, 18h',
   run:function(box){
     box.innerHTML='<div class="result"><p><b>Estendidas.</b> Os 3 corretores são avisados em 10 minutos. Se mudar de ideia, diga <b>desfaz</b> dentro desse prazo e volta como estava.</p></div>';
-    S.acoes.push('acao');pushFeed('Reserva',nome()+' estendeu 3 reservas até amanhã 18h',true,0);renderFeed();
+    acao('acao');pushFeed('Reserva',nome()+' estendeu 3 reservas até amanhã 18h',true,0);renderFeed();
     $$('#res li').slice(0,3).forEach(function(li){var w=$('.when',li);w.textContent='vence amanhã 18h';w.className='when n'})}}
 };
 function prog(box,tit,sub,total,fim){
   box.innerHTML='<div class="prog"><span>'+tit+' · '+sub+'</span><div class="b"><i id="pb"></i></div><span id="pc" class="num">0 / '+total+'</span></div>';
   var i=0,step=Math.max(1,Math.round(total/14));
   var t=setInterval(function(){i=Math.min(total,i+step);$('#pb').style.width=(i/total*100)+'%';$('#pc').textContent=i+' / '+total;
-    if(i>=total){clearInterval(t);box.innerHTML='<div class="result"><p>'+fim()+'</p></div>';S.acoes.push('acao');pushFeed('Ação',nome()+' · '+tit.toLowerCase()+' · '+sub,true,0);renderFeed()}},110);
+    if(i>=total){clearInterval(t);box.innerHTML='<div class="result"><p>'+fim()+'</p></div>';acao('acao');pushFeed('Ação',nome()+' · '+tit.toLowerCase()+' · '+sub,true,0);renderFeed()}},110);
   S.timers.push(t);
 }
 var lastFocus=null;
 function abrirAchado(k){
   var a=ACH[k];lastFocus=document.activeElement;
-  S.achados[k]=true;markHot($('.hot[data-k="'+k+'"]'));updateHunt();
+  S.achados[k]=true;markHot($('.hot[data-k="'+k+'"]'));updateHunt();registrar('sinal.'+k,{sinais:[k]});
   var c=$('#sheet-c');
   c.innerHTML='<button class="x mono" id="x">Fechar</button><span class="eyebrow">Sinal '+a.n+' de 3</span><h3 id="sh-t">'+a.t+'</h3>'+
    '<div class="blk"><span class="lbl">O que o dado mostra</span>'+a.dado+'</div>'+
@@ -696,6 +721,7 @@ function calc(){
   var horas=0,val=0;
   $('#hrs').innerHTML=H.map(function(h){horas+=h[2];val+=h[2]*h[3];return '<li><span>'+h[0]+'<small>'+h[1]+'</small></span><b class="num">'+brl(h[2]*h[3])+'/mês</b></li>'}).join('')+
    '<li><span><b>Total devolvido</b><small>'+Math.round(horas)+' h por mês</small></span><b class="num" style="color:var(--acc)">'+brl(val)+'/mês</b></li>';
+  registrarDepois('calculadora',{corretores:n,ticket:t,margem_pct:Math.round(m*100)});
   var marg=t*m,eq=$('#eq'),inv=$('#inv');
   inv.hidden=!MOSTRAR_PRECO;
   if(MOSTRAR_PRECO){
@@ -707,8 +733,16 @@ function calc(){
   }
 }
 $('#r-n').addEventListener('input',calc);$('#r-t').addEventListener('input',calc);$('#r-m').addEventListener('input',calc);
-$('#cta-b').addEventListener('click',function(){
-  $('#cta').innerHTML='<span class="eyebrow">Recebido</span><h3 style="font-size:1.4rem">Obrigado, '+esc(nome().split(' ')[0])+'.</h3><p class="mute" style="max-width:60ch">Vamos montar o Pulso com a tabela e os dados de '+esc(S.inc||'a sua incorporadora')+'. Nesta versão de protótipo nada foi enviado.</p>'});
+$('#cta-f').addEventListener('submit',function(e){
+  e.preventDefault();
+  var zap=$('#c-zap').value.replace(/\D/g,''),mail=$('#c-mail').value.trim(),msg=$('#c-msg');
+  var zapOk=zap.length>=10&&zap.length<=13,mailOk=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail);
+  if(!zapOk&&!mailOk){msg.textContent='Informe um WhatsApp com DDD ou um e-mail válido.';msg.classList.add('erro');$('#c-zap').focus();return}
+  msg.classList.remove('erro');
+  registrar('contato',{contato_whatsapp:zapOk?zap:'',contato_email:mailOk?mail:'',pedir_contato:true});
+  $('#cta').innerHTML='<span class="eyebrow">Recebido</span><h3 style="font-size:1.4rem">Obrigado, '+esc(nome().split(' ')[0])+'.</h3><p class="mute" style="max-width:60ch">'+
+    (CAPTURA_URL?'A PIPADriven vai falar com você '+(zapOk?'pelo WhatsApp informado':'pelo e-mail informado')+' para montar o Pulso com a tabela e os dados de '+esc(S.inc||'a sua incorporadora')+'.':'Vamos montar o Pulso com a tabela e os dados de '+esc(S.inc||'a sua incorporadora')+'. Nesta versão de protótipo nada foi enviado.')+'</p>';
+});
 
 /* ---------- sala ao vivo ---------- */
 var GENTE=[['Carlos Almeida','Diretor'],['Ana Prado','Gerente comercial'],['Marcos Teles','Gerente comercial'],['Júlia Ferraz','Diretora'],['Rafael Duarte','Diretor']];
