@@ -298,7 +298,7 @@ footer.f button{background:none;border:0;color:var(--mute);text-decoration:under
           <button type="button" class="chip" data-p="gerente" aria-pressed="false">Gerente comercial</button>
         </div>
       </div>
-      <button class="btn" type="submit">Entrar na rede <span aria-hidden="true">→</span></button>
+      <button class="btn" type="submit">Começar a experiência <span aria-hidden="true">→</span></button>
       <p class="fine">Usamos seus dados para personalizar a experiência e, se você pedir, para a PIPADriven entrar em contato.</p>
     </form>
   </div>
@@ -389,6 +389,7 @@ footer.f button{background:none;border:0;color:var(--mute);text-decoration:under
       <div class="sub first"><span class="sub-t">Dados da sua incorporadora</span>
         <div class="calc-in">
           <div><label for="r-n"><span class="lbl">Corretores credenciados</span><b id="o-n">300</b></label><input type="range" id="r-n" min="50" max="500" step="10" value="300"></div>
+          <div><label for="r-g"><span class="lbl">Gestores comerciais</span><b id="o-g">1 gestor</b></label><input type="range" id="r-g" min="1" max="4" step="1" value="1"><p class="fine" style="margin-top:6px">Cada gestor devolve as próprias horas de cobrança e controle. Sem cobrança por gestor.</p></div>
           <div><label for="r-t"><span class="lbl">Ticket médio da unidade</span><b id="o-t">R$ 800 mil</b></label><input type="range" id="r-t" min="300000" max="2000000" step="50000" value="800000"></div>
           <div><label for="r-m"><span class="lbl">Margem por venda</span><b id="o-m">10%</b></label><input type="range" id="r-m" min="5" max="20" step="1" value="10"><p class="fine" style="margin-top:6px">Premissa sua. Troque pelo número real da incorporadora.</p></div>
         </div>
@@ -425,7 +426,7 @@ footer.f button{background:none;border:0;color:var(--mute);text-decoration:under
 </section>
 </main>
 
-<footer class="f"><div class="wrap mono"><span>Protótipo · respostas e números de demonstração</span><button id="open-sala">Modo apresentador</button></div></footer>
+<footer class="f"><div class="wrap mono"><span>Demonstração · respostas e números de exemplo</span><button id="open-sala">Modo apresentador</button></div></footer>
 
 <div class="sheet" id="sheet" hidden><div class="sheet-c" role="dialog" aria-modal="true" aria-labelledby="sh-t" id="sheet-c"></div></div>
 
@@ -714,25 +715,29 @@ function initValor(){
   calc();
 }
 function calc(){
-  var n=+$('#r-n').value,t=+$('#r-t').value,m=+$('#r-m').value/100;
-  $('#o-n').textContent=n;$('#o-m').textContent=Math.round(m*100)+'%';
+  var n=+$('#r-n').value,g=+$('#r-g').value,t=+$('#r-t').value,m=+$('#r-m').value/100;
+  $('#o-n').textContent=n;$('#o-g').textContent=g+(g===1?' gestor':' gestores');$('#o-m').textContent=Math.round(m*100)+'%';
   $('#o-t').textContent=t>=1e6?'R$ '+dec(t/1e6)+' mi':'R$ '+Math.round(t/1000)+' mil';
-  var H=[['Gerente comercial','2 h por dia a R$ 150/h · 22 dias',2*22,150],['Plantão','3 h por dia a R$ 50/h · 22 dias',3*22,50],['Coordenação','4 h por semana a R$ 100/h',4*4.33,100]];
+  var H=[[g>1?'Gestores comerciais':'Gerente comercial','2 h por dia a R$ 150/h · 22 dias'+(g>1?' · '+g+' gestores':''),2*22*g,150],['Plantão','3 h por dia a R$ 50/h · 22 dias',3*22,50],['Coordenação','4 h por semana a R$ 100/h',4*4.33,100]];
   var horas=0,val=0;
   $('#hrs').innerHTML=H.map(function(h){horas+=h[2];val+=h[2]*h[3];return '<li><span>'+h[0]+'<small>'+h[1]+'</small></span><b class="num">'+brl(h[2]*h[3])+'/mês</b></li>'}).join('')+
    '<li><span><b>Total devolvido</b><small>'+Math.round(horas)+' h por mês</small></span><b class="num" style="color:var(--acc)">'+brl(val)+'/mês</b></li>';
-  registrarDepois('calculadora',{corretores:n,ticket:t,margem_pct:Math.round(m*100)});
+  registrarDepois('calculadora',{corretores:n,gestores:g,ticket:t,margem_pct:Math.round(m*100)});
   var marg=t*m,eq=$('#eq'),inv=$('#inv');
   inv.hidden=!MOSTRAR_PRECO;
   if(MOSTRAR_PRECO){
     var custo=n*PRECO_POR_CORRETOR, liq=Math.max(0,custo*12-val*12), vc=liq/marg, vs=custo*12/marg;
     inv.innerHTML='<span class="sub-t">Investimento na PIPA</span><div class="v num">'+brl(custo)+' por mês</div><p class="fine" style="margin-top:4px">R$ '+PRECO_POR_CORRETOR+' por corretor credenciado · '+brl(custo*12)+' por ano</p>';
-    eq.innerHTML='<span class="lbl">Para o investimento se pagar, contando o tempo devolvido</span><div class="big num">'+dec1(vc)+' '+(vc<2?'venda':'vendas')+' por ano</div><p class="mute">Sem contar o tempo devolvido: '+dec(vs)+' vendas por ano.</p><p class="fine" style="margin-top:4px">Cada venda deixa '+brl(marg)+' de margem pela sua premissa.</p>';
+    if(val>=custo){
+      eq.innerHTML='<span class="lbl">Para o investimento se pagar</span><div class="big num">Só com o tempo devolvido</div><p class="mute">O tempo devolvido ('+brl(val)+' por mês) cobre o investimento ('+brl(custo)+' por mês) sem precisar de nenhuma venda. Sobram '+brl(val-custo)+' por mês.</p><p class="fine" style="margin-top:4px">Sem contar o tempo devolvido: '+dec(vs)+' '+(vs<2?'venda':'vendas')+' por ano, com margem de '+brl(marg)+' por venda.</p>';
+    }else{
+      eq.innerHTML='<span class="lbl">Para o investimento se pagar, contando o tempo devolvido</span><div class="big num">'+dec1(vc)+' '+(vc<2?'venda':'vendas')+' por ano</div><p class="mute">Sem contar o tempo devolvido: '+dec(vs)+' '+(vs<2?'venda':'vendas')+' por ano.</p><p class="fine" style="margin-top:4px">Cada venda deixa '+brl(marg)+' de margem pela sua premissa.</p>';
+    }
   }else{
     eq.innerHTML='<span class="lbl">Tempo devolvido por ano</span><div class="big num">'+brl(val*12)+'</div><p class="mute">Só em horas de quem hoje faz planilha e cobrança.</p>';
   }
 }
-$('#r-n').addEventListener('input',calc);$('#r-t').addEventListener('input',calc);$('#r-m').addEventListener('input',calc);
+$('#r-n').addEventListener('input',calc);$('#r-g').addEventListener('input',calc);$('#r-t').addEventListener('input',calc);$('#r-m').addEventListener('input',calc);
 $('#cta-f').addEventListener('submit',function(e){
   e.preventDefault();
   var zap=$('#c-zap').value.replace(/\D/g,''),mail=$('#c-mail').value.trim(),msg=$('#c-msg');
