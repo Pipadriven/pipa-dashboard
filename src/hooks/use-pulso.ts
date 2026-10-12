@@ -25,6 +25,7 @@ export interface PulsoSessao {
   decidiu: boolean;
   resp_media_s: number | null;
   corretores: number | null;
+  gestores: number | null;
   ticket: number | null;
   margem_pct: number | null;
   contato_whatsapp: string | null;

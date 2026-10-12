@@ -99,6 +99,7 @@ function Detalhe({ s }: { s: PulsoSessao }) {
           <p className="metric-label mb-1">Calculadora (o que ele ajustou)</p>
           <p className="text-foreground">
             {s.corretores != null ? `${nf(s.corretores)} corretores` : "não mexeu"}
+            {s.gestores != null ? ` · ${nf(s.gestores)} ${s.gestores === 1 ? "gestor" : "gestores"}` : ""}
             {s.ticket != null ? ` · ticket ${brl(s.ticket)}` : ""}
             {s.margem_pct != null ? ` · margem ${nf(s.margem_pct)}%` : ""}
           </p>
